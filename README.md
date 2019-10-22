@@ -13,8 +13,8 @@
 
 Download the latest version of CCE below.
 
-| Win x32 | Win x64 | Mac  | Linux |
-| ------- | ------- | ---- | ----- |
-|         |         |      |       |
+| Win x32            | Win x64            | Mac                | Linux              |
+| ------------------ | ------------------ | ------------------ | ------------------ |
+| [Download Alpha]() | [Download Alpha]() | [Download Alpha]() | [Download Alpha]() |
 
 Or install a previous version from [here]().
