@@ -3,9 +3,7 @@
     <h1 style="margin-top: 0;font-family: Georgia;">
         Console Code Editor
     </h1>
-    <svg viewBox="0 0 150 15" xmlns="http://www.w3.org/2000/svg">
-      <text x="3" y="13" style="font-family: Georgia;">Console Code Editor</text>
-    </svg>
+    <img src="title.png" alt="Console Code Editor" width="50%"/>
     <p style="padding-bottom: 100px;">
         Lightweight and elegant text/code editor in your console!<br>
         A good alternative to vim or nano.
