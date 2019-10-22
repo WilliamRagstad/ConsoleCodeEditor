@@ -8,6 +8,10 @@
     </p>
 </div>
 
+<br>
+
+<br>
+
 ## Installation
 
 Download the latest version of CCE below.
