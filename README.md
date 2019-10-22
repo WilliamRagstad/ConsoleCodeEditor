@@ -1,5 +1,6 @@
 <div align="center">
     <img src="logo.png" alt="CCE" width="50%" />
+    <br>
     <img src="title.png" alt="Console Code Editor" width="40%"/>
     <p style="padding-bottom: 100px;">
         Lightweight and elegant text/code editor in your console!<br>
