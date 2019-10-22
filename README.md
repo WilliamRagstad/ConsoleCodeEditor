@@ -4,10 +4,7 @@
         Console Code Editor
     </h1>
     <svg viewBox="0 0 150 15" xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .georgia { font: 13px "Georgia"; }
-      </style>
-      <text x="0" y="13" class="georgia">Console Code Editor</text>
+      <text x="3" y="13" style="font-family: Georgia;">Console Code Editor</text>
     </svg>
     <p style="padding-bottom: 100px;">
         Lightweight and elegant text/code editor in your console!<br>
