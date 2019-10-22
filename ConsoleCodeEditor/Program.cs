@@ -8,27 +8,26 @@ namespace ConsoleCodeEditor
 {
     class Program
     {
+        public static Editor.ParentWindow ParentWindow;
         static void Main(string[] args)
         {
             args = new[] { "/new", "123", "/open", "file.txt", "123", "//debug", "true" };
             Arguments arguments = Arguments.Parse(args);
-
-            if (arguments.Contains("new"))
+            
+            if (arguments.FindPattern("new"))
             {
                 // Create a tmp file somewhere and later save/remove it on exit
-                return;
-            }
-            if (arguments.Contains("open"))
-            {
-                if (arguments["open"].Count > 0)
-                {
 
-                }
-                else
-                {
-                    throw new ArgumentException("Missing file to open!");
-                }
             }
+            if (arguments.FindPattern("open", typeof(string)))
+            {
+
+            }
+
+            // Errors
+            if (arguments.FindPattern("open")) throw new ArgumentException("Missing file(s) to open!");
+
+            // Show editor
         }
     }
 }

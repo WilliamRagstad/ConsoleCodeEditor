@@ -16,7 +16,7 @@ namespace ConsoleCodeEditor
             {
                 if (args[i][0] == keySelector)
                 {
-                    string key = args[i].TrimStart(keySelector);
+                    string key = args[i].Replace(keySelector.ToString(), "");
                     List<string> values = new List<string>();
                     while(i < args.Length - 1)
                     {
@@ -49,5 +49,28 @@ namespace ConsoleCodeEditor
             }
         }
         public bool Contains(string key) => Dictionary.ContainsKey(key);
+        public int Length => Dictionary.Count;
+
+        public bool FindPattern(string key, params Type[] types)
+        {
+            if (!Dictionary.ContainsKey(key)) return false;
+            List<string> keyValues = Dictionary[key];
+            for (int i = 0; i < keyValues.Count; i++)
+            {
+                for (int j = 0; j < types.Length; j++)
+                {
+                    if (types[j] == typeof(string)) continue; // A string is always convertable to a string.
+
+                    object typeVal = null;
+                    try
+                    {
+                        typeVal = Convert.ChangeType(keyValues[i], types[j]);
+                    }
+                    catch { }
+                    if (typeVal == null) return false;
+                }
+            }
+            return true;
+        }
     }
 }
