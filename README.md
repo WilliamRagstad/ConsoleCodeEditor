@@ -1,5 +1,5 @@
 <div style="text-align: center">
-    <img src="C:\Users\ewr0327\Google Drive (william.ragstad@gmail.com)\- Programming Projects\ConsoleCodeEditor\logo.png" alt="CCE" style="width:50%;text-align: center;" />
+    <img src="logo.png" alt="CCE" style="width:50%;text-align: center;" />
     <h1 style="margin-top: 0;font-family: Georgia;">
         Console Code Editor
     </h1>
