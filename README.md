@@ -1,9 +1,6 @@
 <div align="center">
     <img src="logo.png" alt="CCE" width="50%" />
-    <h1 style="margin-top: 0;font-family: Georgia;">
-        Console Code Editor
-    </h1>
-    <img src="title.png" alt="Console Code Editor" width="50%"/>
+    <img src="title.png" alt="Console Code Editor" width="40%"/>
     <p style="padding-bottom: 100px;">
         Lightweight and elegant text/code editor in your console!<br>
         A good alternative to vim or nano.
