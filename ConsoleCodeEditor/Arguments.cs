@@ -32,7 +32,7 @@ namespace ConsoleCodeEditor
                             values.Add(args[i]);
                         }
                     }
-                    arguments.Dictionary.Add(key, values);
+                    if (!arguments.Dictionary.ContainsKey(key)) arguments.Dictionary.Add(key, values);
                 }
             }
 

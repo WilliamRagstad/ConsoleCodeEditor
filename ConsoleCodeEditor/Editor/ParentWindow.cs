@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Console = Colorful.Console;
 
 namespace ConsoleCodeEditor.Editor
 {
@@ -15,15 +19,27 @@ namespace ConsoleCodeEditor.Editor
         /// top level mouse handeling (onMove, onClick, onHover etc...),
         /// etc...
         /// </summary>
-        public ParentWindow() { }
+        public ParentWindow() {
+            Editors = new List<Editor>();
+            _currentEditorIndex = 0;
+            _runtime = new Thread(_runtimeLoop);
+        }
 
         public List<Editor> Editors;
+        private int _currentEditorIndex;
+        private Thread _runtime;
+        private bool _keepRuntimeAlive;
+        public static int TabHeight = 2;
+        public static int DockHeight = 2;
         public void DrawTabs()
         {
             Console.SetCursorPosition(0,0);
             for (int i = 0; i < Editors.Count; i++)
             {
-                Console.Write($"\\{Editors[i]}\\");
+                if (i == _currentEditorIndex) Console.BackgroundColor = Settings.TabBackground;
+                Console.Write($" {Editors[i].Filename} ");
+                Console.BackgroundColor = Settings.DefaultBackground;
+                Console.Write("|");
             }
             Console.Write('\n');
             for (int i = 0; i < Console.WindowWidth; i++)
@@ -32,6 +48,46 @@ namespace ConsoleCodeEditor.Editor
             }
             Console.Write('\n');
         }
+        public void DrawDock()
+        {
+            Editor cEditor = Editors[_currentEditorIndex];
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("=");
+            }
+            if (!cEditor.FileIsSaved) Console.Write("<!>");
+            string text = $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
+            Console.CursorLeft = Console.WindowWidth - text.Length - 1;
+            Console.Write(text);
+        }
+        public void Start()
+        {
+            Console.Clear();
+            Console.ForegroundColor = Settings.DefaultForeground;
+            DrawTabs();
+            DrawDock();
 
+            _keepRuntimeAlive = true;
+            _runtime.Start();
+        }
+
+        public void Stop()
+        {
+            _keepRuntimeAlive = false;
+            _runtime.Join();
+            _runtime.Abort(); // Is probably unecessary
+            Console.Clear();
+        }
+
+        private void _runtimeLoop()
+        {
+            while(_keepRuntimeAlive)
+            {
+                Editors[_currentEditorIndex].Run();
+
+                Thread.Sleep(500); // Some delay for debugging
+            }
+        }
     }
 }
