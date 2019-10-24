@@ -13,12 +13,15 @@ namespace ConsoleCodeEditor
         public static string cceHome = userDirectory + @".cce\";
         public static string tmpFilepath = cceHome + @"tmp\";
 
-        public static Color DefaultForeground = Color.LightGray;
-        public static Color DefaultBackground = Color.Black;
+        public static int tabIndex = 4;
 
         #region Color theme
 
-        public static Color TabBackground = Color.DarkBlue;
+        public static Color DefaultForeground = Color.LightGray;
+        public static Color DefaultBackground = Color.Black;
+
+        public static Color SelectedTabBackground = Color.DarkBlue;
+        public static Color LineNumbersForeground = Color.DarkGray;
 
         #endregion
     }

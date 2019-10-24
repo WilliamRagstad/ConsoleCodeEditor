@@ -38,7 +38,7 @@ namespace ConsoleCodeEditor.Editor
         public string Filename;
         private string Filepath;
         public SyntaxHighlighting.LanguageSyntax LanguageSyntax;
-
+        
         public int CursorTop; // Relative to the parent window
         public int CursorLeft;// -||-
 
@@ -46,10 +46,12 @@ namespace ConsoleCodeEditor.Editor
         public Encoding FileEncoding;
         private List<string> contentBuffer;
 
+        public ParentWindow Parent;
+
         private void SaveToFile() => File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
         private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
-        private int LinesLength => contentBuffer.Count.ToString().Length;
-
+        private int LinesLength => (contentBuffer.Count - 1).ToString().Length;
+        public void AddNewLine() => contentBuffer.Add("");
         public static SyntaxHighlighting.LanguageSyntax DetectLanguageSyntax(string filepath) {
             string[] fp = filepath.Split('.');
             string fileExt = fp[fp.Length - 1].ToLower();
@@ -109,27 +111,155 @@ namespace ConsoleCodeEditor.Editor
         }
         public void DrawAllLines()
         {
-            for (int i = 0; i < contentBuffer.Count + 1; i++) DrawLine(i);
-            contentBuffer.Add(Console.ReadLine());
+            for (int i = 0; i < contentBuffer.Count; i++) DrawLine(i, false);
         }
 
-        private void DrawLine(int index)
+        private void ClearLine(int top)
         {
-            Console.SetCursorPosition(0, index + ParentWindow.TabHeight);
-            for (int j = 0; j < LinesLength - index.ToString().Length; j++) Console.Write(" ");
+            Console.SetCursorPosition(0, top);
+            for (int j = 0; j < Console.BufferWidth; j++) Console.Write(" ");
+        }
+
+        private void DrawLine(int index, bool takeUserInput = true)
+        {
+            int row = index + ParentWindow.TabHeight;
+            ClearLine(row);
+            Console.SetCursorPosition(LinesLength - index.ToString().Length, row);
+            Console.ForegroundColor = Settings.LineNumbersForeground;
             Console.Write($"{index}| ");
-            if (index < contentBuffer.Count - 1) WriteSyntaxHighlight(contentBuffer[index]);
+            Console.ForegroundColor = Settings.DefaultForeground;
+            if (index < contentBuffer.Count) WriteSyntaxHighlight(contentBuffer[index]);
+
+            if (takeUserInput && CursorTop == index)
+            {
+                // Cursor is on the current line
+                Console.CursorLeft = LinesLength + 2 + CursorLeft;
+                Console.ForegroundColor = Settings.DefaultForeground;
+                ConsoleKeyInfo key = Console.ReadKey();
+
+                if (key.Modifiers == ConsoleModifiers.Control)
+                {
+                    switch(key.Key)
+                    {
+                        case ConsoleKey.S:
+                            SaveToFile();
+                            FileIsSaved = true;
+                            break;
+                    }
+                }
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
+                    contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
+                    contentBuffer.Insert(CursorTop + 1, leftHandSide);
+                    CursorTop++;
+                    CursorLeft = 0;
+                    DrawAllLines();
+                    return;
+                }
+                if (key.Key == ConsoleKey.UpArrow)
+                {
+                    if (CursorTop > 0)
+                    {
+                        if (CursorLeft > contentBuffer[index - 1].Length) CursorLeft = contentBuffer[index - 1].Length;
+                        CursorTop--;
+                        DrawLine(index); // Draw the previous line
+                    }
+                    return;
+                }
+                if (key.Key == ConsoleKey.DownArrow)
+                {
+                    if (CursorTop < contentBuffer.Count - 1)
+                    {
+                        if (CursorLeft > contentBuffer[index + 1].Length) CursorLeft = contentBuffer[index + 1].Length;
+                        CursorTop++;
+                        DrawLine(index); // Draw the previous line
+                    }
+                    return;
+                }
+                if (key.Key == ConsoleKey.LeftArrow)
+                {
+                    if (CursorLeft > 0) CursorLeft -= 1;
+                    else if (CursorTop > 0)
+                    {
+                        CursorTop--;
+                        CursorLeft = contentBuffer[index - 1].Length;
+                        DrawLine(index); // Draw the previous line
+                    }
+                    return;
+                }
+                if (key.Key == ConsoleKey.RightArrow)
+                {
+                    if (CursorLeft < contentBuffer[index].Length) CursorLeft += 1;
+                    else if (CursorTop + 1 < contentBuffer.Count)
+                    {
+                        CursorTop++;
+                        CursorLeft = 0;
+                    }
+                    return;
+                }
+                if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (CursorLeft == 0 && CursorTop > 0)
+                    {
+                        CursorLeft = contentBuffer[index - 1].Length;
+                        contentBuffer[index - 1] = contentBuffer[index - 1] + contentBuffer[index];
+                        contentBuffer.RemoveAt(index);
+                        CursorTop--;
+                        Parent.Draw();
+                        DrawAllLines();
+                        return;
+                    }
+                    if (contentBuffer[index].Length == 0 && CursorTop > 0)
+                    {
+                        contentBuffer.RemoveAt(index);
+                        CursorTop--;
+                        Parent.Draw();
+                        DrawAllLines();
+                        return;
+                    }
+                    if (CursorLeft > 0) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
+                    if (CursorLeft > 0) CursorLeft--;
+                    return;
+                }
+                if (key.Key == ConsoleKey.Delete)
+                {
+                    if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
+                    {
+                        contentBuffer[index] = contentBuffer[index] + contentBuffer[index + 1];
+                        contentBuffer.RemoveAt(index + 1);
+                        Parent.Draw();
+                        DrawAllLines();
+                        return;
+                    }
+                    if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
+                    return;
+                }
+                if (key.Key == ConsoleKey.Tab)
+                {
+                    for (int i = 0; i < Settings.tabIndex; i++)
+                    {
+                        contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, " ");
+                        CursorLeft++;
+                    }
+                    return;
+                }
+
+                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
+                CursorLeft++;
+            }
         }
 
-        public void Update()
+        public void Start()
         {
-
-        }
-
-        public void Run()
-        {
-            Update();
             DrawAllLines();
+        }
+
+        public void Runtime()
+        {
+            DrawLine(CursorTop);
+            Parent.DrawDock();
         }
         public void Initialize() => contentBuffer = ReadFileContent();
     }

@@ -25,6 +25,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
 
             // Statements
+            RegexRules.Add(@"return|break|continue", Color.YellowGreen);
             RegexRules.Add(@"(do)(?:[\x20\t]*)(?={)", Color.Yellow);
             RegexRules.Add(@"(case)(?:.*)(?=:)", Color.Yellow);
             RegexRules.Add(@"(if|else|while|for|switch)(?:[\x20\t]*)(?=\()", Color.Yellow);
@@ -34,7 +35,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"<|>|&&|\|\||!|<=|>=", Color.DarkGray);
             RegexRules.Add(@"\[|\]|\(|\)|{|}", Color.Brown);
 
-            RegexRules.Add(@"[\d.\-]+x?[\d]*[fd]?", Color.Orange); // Numbers (f,d suffix) (0x0)
+            RegexRules.Add(@"(?![^\w])[\d.\-]+x?[\d]*[fd]?", Color.Orange); // Numbers (f,d suffix) (0x0)
             RegexRules.Add("\"([^\"])*\"", Color.Green); // Strings
 
             // Comments

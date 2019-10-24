@@ -31,12 +31,18 @@ namespace ConsoleCodeEditor.Editor
         private bool _keepRuntimeAlive;
         public static int TabHeight = 2;
         public static int DockHeight = 2;
+
+        public void AddEditor(Editor editor)
+        {
+            editor.Parent = this;
+            Editors.Add(editor);
+        }
         public void DrawTabs()
         {
             Console.SetCursorPosition(0,0);
             for (int i = 0; i < Editors.Count; i++)
             {
-                if (i == _currentEditorIndex) Console.BackgroundColor = Settings.TabBackground;
+                if (i == _currentEditorIndex) Console.BackgroundColor = Settings.SelectedTabBackground;
                 Console.Write($" {Editors[i].Filename} ");
                 Console.BackgroundColor = Settings.DefaultBackground;
                 Console.Write("|");
@@ -57,19 +63,24 @@ namespace ConsoleCodeEditor.Editor
                 Console.Write("=");
             }
             if (!cEditor.FileIsSaved) Console.Write("<!>");
-            string text = $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
+            string clearPrevTextPadding = "    ";
+            string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
             Console.CursorLeft = Console.WindowWidth - text.Length - 1;
             Console.Write(text);
         }
         public void Start()
         {
+            Draw();
+            _keepRuntimeAlive = true;
+            _runtime.Start();
+        }
+
+        public void Draw()
+        {
             Console.Clear();
             Console.ForegroundColor = Settings.DefaultForeground;
             DrawTabs();
             DrawDock();
-
-            _keepRuntimeAlive = true;
-            _runtime.Start();
         }
 
         public void Stop()
@@ -82,11 +93,12 @@ namespace ConsoleCodeEditor.Editor
 
         private void _runtimeLoop()
         {
-            while(_keepRuntimeAlive)
+            Editors[_currentEditorIndex].Start();
+            while (_keepRuntimeAlive)
             {
-                Editors[_currentEditorIndex].Run();
+                Editors[_currentEditorIndex].Runtime();
 
-                Thread.Sleep(500); // Some delay for debugging
+                //Thread.Sleep(500); // Some delay for debugging
             }
         }
     }

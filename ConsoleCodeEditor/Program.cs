@@ -15,20 +15,35 @@ namespace ConsoleCodeEditor
             // Initialize a new parent window
             ParentWindow = new Editor.ParentWindow();
 
-            args = new[] { "/new" };
+            // args = new[] { "/open", "exampleFile.c" };
             Arguments arguments = Arguments.Parse(args);
+
+            if (arguments.Length == 0)
+            {
+                Console.WriteLine(
+                    "Usage:\n" +
+                    "  /new\t\t\t\tStart editing a new file.\n"+
+                    "  /open (file1) [file2] ...\tOpen and edit an existing file."
+                );
+                return;
+            }
             
             if (arguments.FindPattern("new"))
             {
                 // Create a tmp file somewhere and later save/remove it on exit
                 string tmpFile = "untitled-" + newTmpFileIndex;
                 newTmpFileIndex++;
-                ParentWindow.Editors.Add(
-                    new Editor.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.C.Instance)
-                );
+                Editor.Editor newFile = new Editor.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.C.Instance);
+                newFile.AddNewLine();
+                ParentWindow.AddEditor(newFile);
             }
-            if (arguments.FindPattern("open", typeof(string)))
+            if (arguments.FindPattern("open"))
             {
+                if (arguments["open"].Count == 0)
+                {
+                    Console.WriteLine("Missing file(s) to open!");
+                    return;
+                }
                 for (int i = 0; i < arguments["open"].Count; i++)
                 {
                     string filepath = arguments["open"][i];
@@ -37,13 +52,11 @@ namespace ConsoleCodeEditor
 
                     Editor.Editor openFileEditor = new Editor.Editor(filename, filepath); // This will trigger the autodetect language method
                     openFileEditor.Initialize();
-                    ParentWindow.Editors.Add(
+                    ParentWindow.AddEditor(
                         openFileEditor
                     );
                 }
             }
-            // Errors
-            else if (arguments.FindPattern("open")) throw new ArgumentException("Missing file(s) to open!");
 
             // Start editor
             ParentWindow.Start();
