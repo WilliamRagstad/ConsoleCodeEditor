@@ -156,6 +156,8 @@ namespace ConsoleCodeEditor.Editor
                 Console.ForegroundColor = Settings.DefaultForeground;
                 ConsoleKeyInfo key = Console.ReadKey();
 
+                if (key.Key == 0) return; // This causes an fun bug (CTRL+M)
+
                 if (key.Modifiers == ConsoleModifiers.Control)
                 {
                     switch(key.Key)
@@ -165,6 +167,13 @@ namespace ConsoleCodeEditor.Editor
                             FileIsSaved = true;
                             return;
                     }
+                }
+                else if (key.Modifiers == ConsoleModifiers.Alt)
+                {
+                    // Change Tab
+                    int tabIndex = int.Parse(key.KeyChar.ToString());
+                    Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    return;
                 }
 
                 if (key.Key == ConsoleKey.Enter)

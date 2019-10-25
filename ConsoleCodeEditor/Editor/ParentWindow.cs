@@ -37,6 +37,15 @@ namespace ConsoleCodeEditor.Editor
         private static int prevWindowWidth;
         private static int prevWindowHeight;
 
+        public void SetCurrentEditor(int index)
+        {
+            if (index < Editors.Count)
+            {
+                _currentEditorIndex = index;
+                Draw();
+                Editors[_currentEditorIndex].DrawAllLines();
+            }
+        }
         public void AddEditor(Editor editor, bool newFile = false)
         {
             editor.Parent = this;
