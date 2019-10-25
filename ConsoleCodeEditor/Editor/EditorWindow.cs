@@ -38,17 +38,36 @@ namespace ConsoleCodeEditor.Editor
         public string Filename;
         private string Filepath;
         public SyntaxHighlighting.LanguageSyntax LanguageSyntax;
-        
+
         public int CursorTop; // Relative to the parent window
         public int CursorLeft;// -||-
 
-        public bool FileIsSaved;
+        private bool _fileIsSaved;
+        public bool FileIsSaved
+        {
+            get
+            {
+                return _fileIsSaved;
+            }
+            set
+            {
+                if (value != _fileIsSaved && Parent != null)
+                {
+                    _fileIsSaved = value;
+                    Parent.Draw();
+                    DrawAllLines();
+                }
+            }
+        }
         public Encoding FileEncoding;
         private List<string> contentBuffer;
 
         public ParentWindow Parent;
 
-        private void SaveToFile() => File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
+        private void SaveToFile() {
+            File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
+            FileIsSaved = true;
+        }
         private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
         private int LinesLength => (contentBuffer.Count - 1).ToString().Length;
         public void AddNewLine() => contentBuffer.Add("");
@@ -144,12 +163,13 @@ namespace ConsoleCodeEditor.Editor
                         case ConsoleKey.S:
                             SaveToFile();
                             FileIsSaved = true;
-                            break;
+                            return;
                     }
                 }
 
                 if (key.Key == ConsoleKey.Enter)
                 {
+                    FileIsSaved = false;
                     string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
                     contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
                     contentBuffer.Insert(CursorTop + 1, leftHandSide);
@@ -181,7 +201,7 @@ namespace ConsoleCodeEditor.Editor
                 if (key.Key == ConsoleKey.LeftArrow)
                 {
                     if (CursorLeft > 0) CursorLeft -= 1;
-                    else if (CursorTop > 0)
+                    else if (CursorTop > 0 && CursorLeft == 0)
                     {
                         CursorTop--;
                         CursorLeft = contentBuffer[index - 1].Length;
@@ -201,6 +221,7 @@ namespace ConsoleCodeEditor.Editor
                 }
                 if (key.Key == ConsoleKey.Backspace)
                 {
+                    FileIsSaved = false;
                     if (CursorLeft == 0 && CursorTop > 0)
                     {
                         CursorLeft = contentBuffer[index - 1].Length;
@@ -225,6 +246,7 @@ namespace ConsoleCodeEditor.Editor
                 }
                 if (key.Key == ConsoleKey.Delete)
                 {
+                    FileIsSaved = false;
                     if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
                     {
                         contentBuffer[index] = contentBuffer[index] + contentBuffer[index + 1];
@@ -238,6 +260,7 @@ namespace ConsoleCodeEditor.Editor
                 }
                 if (key.Key == ConsoleKey.Tab)
                 {
+                    FileIsSaved = false;
                     for (int i = 0; i < Settings.tabIndex; i++)
                     {
                         contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, " ");
@@ -248,6 +271,7 @@ namespace ConsoleCodeEditor.Editor
 
                 contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
                 CursorLeft++;
+                FileIsSaved = false;
             }
         }
 
@@ -259,7 +283,7 @@ namespace ConsoleCodeEditor.Editor
         public void Runtime()
         {
             DrawLine(CursorTop);
-            Parent.DrawDock();
+            Parent.UpdateGUI();
         }
         public void Initialize() => contentBuffer = ReadFileContent();
     }

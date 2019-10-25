@@ -23,18 +23,24 @@ namespace ConsoleCodeEditor.Editor
             Editors = new List<Editor>();
             _currentEditorIndex = 0;
             _runtime = new Thread(_runtimeLoop);
+            if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
         }
 
         public List<Editor> Editors;
         private int _currentEditorIndex;
         private Thread _runtime;
+        private Thread _responsiveGUI;
         private bool _keepRuntimeAlive;
+        private bool _keepResponsiveGUIAlive;
         public static int TabHeight = 2;
         public static int DockHeight = 2;
+        private static int prevWindowWidth;
+        private static int prevWindowHeight;
 
-        public void AddEditor(Editor editor)
+        public void AddEditor(Editor editor, bool newFile = false)
         {
             editor.Parent = this;
+            editor.FileIsSaved = !newFile;
             Editors.Add(editor);
         }
         public void DrawTabs()
@@ -43,7 +49,7 @@ namespace ConsoleCodeEditor.Editor
             for (int i = 0; i < Editors.Count; i++)
             {
                 if (i == _currentEditorIndex) Console.BackgroundColor = Settings.SelectedTabBackground;
-                Console.Write($" {Editors[i].Filename} ");
+                Console.Write($" {Editors[i].Filename  +  (!Editors[i].FileIsSaved ? "*" : "")} ");
                 Console.BackgroundColor = Settings.DefaultBackground;
                 Console.Write("|");
             }
@@ -56,12 +62,14 @@ namespace ConsoleCodeEditor.Editor
         }
         public void DrawDock()
         {
+            if (Editors.Count == 0) return;
             Editor cEditor = Editors[_currentEditorIndex];
             Console.SetCursorPosition(0, Console.WindowHeight - 2);
             for (int i = 0; i < Console.WindowWidth; i++)
             {
                 Console.Write("=");
             }
+            Console.Write('\n');
             if (!cEditor.FileIsSaved) Console.Write("<!>");
             string clearPrevTextPadding = "    ";
             string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
@@ -70,8 +78,14 @@ namespace ConsoleCodeEditor.Editor
         }
         public void Start()
         {
+            if(Settings.ResponsiveGUI) UpdateGUI();
             Draw();
             _keepRuntimeAlive = true;
+            if (Settings.ResponsiveGUI)
+            {
+                _keepResponsiveGUIAlive = true;
+                _responsiveGUI.Start();
+            }
             _runtime.Start();
         }
 
@@ -85,9 +99,12 @@ namespace ConsoleCodeEditor.Editor
 
         public void Stop()
         {
+            _keepResponsiveGUIAlive = false;
             _keepRuntimeAlive = false;
             _runtime.Join();
             _runtime.Abort(); // Is probably unecessary
+            _responsiveGUI.Join();
+            _responsiveGUI.Abort();
             Console.Clear();
         }
 
@@ -97,8 +114,30 @@ namespace ConsoleCodeEditor.Editor
             while (_keepRuntimeAlive)
             {
                 Editors[_currentEditorIndex].Runtime();
+            }
+        }
 
-                //Thread.Sleep(500); // Some delay for debugging
+        private void _responsiveGUILoop()
+        {
+            while(_keepResponsiveGUIAlive)
+            {
+                UpdateGUI();
+                Thread.Sleep(10);
+            }
+        }
+        public void UpdateGUI()
+        {
+            if (prevWindowWidth != Console.WindowWidth || prevWindowHeight != Console.WindowHeight )
+            {
+                Draw();
+                Editors[_currentEditorIndex].DrawAllLines();
+                prevWindowWidth = Console.WindowWidth;
+                prevWindowHeight = Console.WindowHeight;
+                if (Settings.ResponsiveGUI)
+                {
+                    Console.BufferWidth = Console.WindowWidth + 3;
+                    Console.BufferHeight = Console.BufferHeight;
+                }
             }
         }
     }

@@ -14,8 +14,9 @@ namespace ConsoleCodeEditor
         {
             // Initialize a new parent window
             ParentWindow = new Editor.ParentWindow();
+            Settings.InitialBufferSize = new System.Drawing.Size(Console.BufferWidth, Console.BufferWidth);
 
-            // args = new[] { "/open", "exampleFile.c" };
+            //args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
             Arguments arguments = Arguments.Parse(args);
 
             if (arguments.Length == 0)
@@ -33,9 +34,9 @@ namespace ConsoleCodeEditor
                 // Create a tmp file somewhere and later save/remove it on exit
                 string tmpFile = "untitled-" + newTmpFileIndex;
                 newTmpFileIndex++;
-                Editor.Editor newFile = new Editor.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.C.Instance);
+                Editor.Editor newFile = new Editor.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.PlainText.Instance);
                 newFile.AddNewLine();
-                ParentWindow.AddEditor(newFile);
+                ParentWindow.AddEditor(newFile, true);
             }
             if (arguments.FindPattern("open"))
             {

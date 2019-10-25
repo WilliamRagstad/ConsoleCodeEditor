@@ -15,6 +15,10 @@ namespace ConsoleCodeEditor
 
         public static int tabIndex = 4;
 
+        public static Size InitialBufferSize;
+
+        public static bool ResponsiveGUI = false;
+
         #region Color theme
 
         public static Color DefaultForeground = Color.LightGray;
