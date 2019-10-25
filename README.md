@@ -13,7 +13,7 @@
 
 <br>
 
-Jump directly to the [installation](#installation).
+Take me to the [installation](#installation) :arrow_right:
 
 ## Preview
 
