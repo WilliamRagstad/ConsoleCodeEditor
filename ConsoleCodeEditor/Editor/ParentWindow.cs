@@ -60,16 +60,23 @@ namespace ConsoleCodeEditor.Editor
             }
             Console.Write('\n');
         }
-        public void DrawDock()
+        public void DrawDock(bool fullRedraw = false)
         {
             if (Editors.Count == 0) return;
             Editor cEditor = Editors[_currentEditorIndex];
-            Console.SetCursorPosition(0, Console.WindowHeight - 2);
-            for (int i = 0; i < Console.WindowWidth; i++)
+            if (prevWindowWidth != Console.WindowWidth || fullRedraw)
             {
-                Console.Write("=");
+                Console.SetCursorPosition(0, Console.WindowHeight - 2);
+                for (int i = 0; i < Console.WindowWidth; i++)
+                {
+                    Console.Write("=");
+                }
+                if (Console.WindowWidth != Console.BufferWidth) Console.Write('\n');
             }
-            if (Console.WindowWidth != Console.BufferWidth) Console.Write('\n');
+            else
+            {
+                Console.SetCursorPosition(0, Console.WindowHeight - 1);
+            }
             if (!cEditor.FileIsSaved) Console.Write("<!>");
             string clearPrevTextPadding = "    ";
             string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
@@ -94,7 +101,7 @@ namespace ConsoleCodeEditor.Editor
             Console.Clear();
             Console.ForegroundColor = Settings.DefaultForeground;
             DrawTabs();
-            DrawDock();
+            DrawDock(true);
         }
 
         public void Stop()
@@ -125,7 +132,7 @@ namespace ConsoleCodeEditor.Editor
                 Thread.Sleep(10);
             }
         }
-        public void UpdateGUI()
+        public bool UpdateGUI()
         {
             if (prevWindowWidth != Console.WindowWidth || prevWindowHeight != Console.WindowHeight )
             {
@@ -138,7 +145,9 @@ namespace ConsoleCodeEditor.Editor
                     Console.BufferWidth = Console.WindowWidth + 3;
                     Console.BufferHeight = Console.BufferHeight;
                 }
+                return true;
             }
+            return false;
         }
     }
 }

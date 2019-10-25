@@ -283,7 +283,7 @@ namespace ConsoleCodeEditor.Editor
         public void Runtime()
         {
             DrawLine(CursorTop);
-            Parent.UpdateGUI();
+            if (!Parent.UpdateGUI()) Parent.DrawDock(); // If the gui wasn't updated, just update the dock.
         }
         public void Initialize() => contentBuffer = ReadFileContent();
     }
