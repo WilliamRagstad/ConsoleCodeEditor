@@ -69,7 +69,7 @@ namespace ConsoleCodeEditor.Editor
             {
                 Console.Write("=");
             }
-            Console.Write('\n');
+            if (Console.WindowWidth != Console.BufferWidth) Console.Write('\n');
             if (!cEditor.FileIsSaved) Console.Write("<!>");
             string clearPrevTextPadding = "    ";
             string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
