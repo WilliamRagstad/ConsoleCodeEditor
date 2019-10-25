@@ -97,9 +97,11 @@ namespace ConsoleCodeEditor.Editor
                 case "md": return SyntaxHighlighting.Languages.MarkDown.Instance;
                 case "php": return SyntaxHighlighting.Languages.PHP.Instanc.Instancee;
                 case "ps1": return SyntaxHighlighting.Languages.Powershell.Instance;
-                case "ps2": return SyntaxHighlighting.Languages.Powershell.Instance;
+                case "ps2": return SyntaxHighlighting.Languages.Powershell.Instance;*/
                 case "py": return SyntaxHighlighting.Languages.Python.Instance;
-                case "rb": return SyntaxHighlighting.Languages.Ruby.Instance;
+                case "py3": return SyntaxHighlighting.Languages.Python.Instance;
+                case "pyt": return SyntaxHighlighting.Languages.Python.Instance;
+                /*case "rb": return SyntaxHighlighting.Languages.Ruby.Instance;
                 case "scss": return SyntaxHighlighting.Languages.Sass.Instance;
                 case ".sql": return SyntaxHighlighting.Languages.SQL.Instance;
                 case ".ts": return SyntaxHighlighting.Languages.TypeScript.Instance;

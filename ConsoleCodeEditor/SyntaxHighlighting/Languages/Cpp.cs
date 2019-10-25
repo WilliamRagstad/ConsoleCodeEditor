@@ -12,7 +12,8 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public Cpp()
         {
             DisplayName = "C++";
-            RegexRules.Add("if", Color.Yellow);
+
+            RegexRules = C.Instance.RegexRules; // Inherit all regex rules from C
         }
     }
 }

@@ -50,6 +50,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="Editor\EditorWindow.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
+    <Compile Include="SyntaxHighlighting\Languages\Python.cs" />
     <Compile Include="SyntaxHighlighting\Languages\C.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Cpp.cs" />
     <Compile Include="SyntaxHighlighting\Languages\CSharp.cs" />

@@ -16,7 +16,7 @@ namespace ConsoleCodeEditor
             ParentWindow = new Editor.ParentWindow();
             Settings.InitialBufferSize = new System.Drawing.Size(Console.BufferWidth, Console.BufferWidth);
 
-            args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
+            //args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
             Arguments arguments = Arguments.Parse(args);
 
             if (arguments.Length == 0)
@@ -24,7 +24,9 @@ namespace ConsoleCodeEditor
                 Console.WriteLine(
                     "Usage:\n" +
                     "  /new\t\t\t\tStart editing a new file.\n"+
-                    "  /open (file1) [file2] ...\tOpen and edit an existing file."
+                    "  /open (file1) [file2] ...\tOpen and edit an existing file.\n\n" +
+                    "See more help:\n" +
+                    "  https://github.com/WilliamRagstad/ConsoleCodeEditor"
                 );
                 return;
             }
