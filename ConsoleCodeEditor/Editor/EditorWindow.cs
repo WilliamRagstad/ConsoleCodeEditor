@@ -69,7 +69,7 @@ namespace ConsoleCodeEditor.Editor
             FileIsSaved = true;
         }
         private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
-        private int LinesLength => (contentBuffer.Count - 1).ToString().Length;
+        public int LinesLength => (contentBuffer.Count - 1).ToString().Length;
         public void AddNewLine() => contentBuffer.Add("");
         public static SyntaxHighlighting.LanguageSyntax DetectLanguageSyntax(string filepath) {
             string[] fp = filepath.Split('.');
@@ -130,9 +130,9 @@ namespace ConsoleCodeEditor.Editor
             }
             Console.ForegroundColor = Settings.DefaultForeground;
         }
-        public void DrawAllLines()
+        public void DrawAllLines(int startIndex = 0)
         {
-            for (int i = 0; i < contentBuffer.Count; i++) DrawLine(i, false);
+            for (int i = startIndex; i < contentBuffer.Count; i++) DrawLine(i, false);
         }
 
         private void ClearLine(int top)
@@ -147,7 +147,7 @@ namespace ConsoleCodeEditor.Editor
             ClearLine(row);
             Console.SetCursorPosition(LinesLength - index.ToString().Length, row);
             Console.ForegroundColor = Settings.LineNumbersForeground;
-            Console.Write($"{index}| ");
+            Console.Write($"{index}{Settings.LineIndexSeparator} ");
             Console.ForegroundColor = Settings.DefaultForeground;
             if (index < contentBuffer.Count) WriteSyntaxHighlight(contentBuffer[index]);
 
@@ -180,13 +180,19 @@ namespace ConsoleCodeEditor.Editor
 
                 if (key.Key == ConsoleKey.Enter)
                 {
+                    int prevLineIndexLen = LinesLength;
                     FileIsSaved = false;
                     string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
                     contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
                     contentBuffer.Insert(CursorTop + 1, leftHandSide);
                     CursorTop++;
                     CursorLeft = 0;
-                    DrawAllLines();
+                    if (prevLineIndexLen != LinesLength)
+                    {
+                        Parent.DrawTabs();
+                        DrawAllLines();
+                    }
+                    else DrawAllLines(CursorTop - 1);
                     return;
                 }
                 if (key.Key == ConsoleKey.UpArrow)
@@ -235,12 +241,21 @@ namespace ConsoleCodeEditor.Editor
                     FileIsSaved = false;
                     if (CursorLeft == 0 && CursorTop > 0)
                     {
+                        int lastLineLen = contentBuffer[contentBuffer.Count - 1].Length;
                         CursorLeft = contentBuffer[index - 1].Length;
                         contentBuffer[index - 1] = contentBuffer[index - 1] + contentBuffer[index];
                         contentBuffer.RemoveAt(index);
                         CursorTop--;
-                        Parent.Draw();
-                        DrawAllLines();
+                        Parent.DrawTabs();
+                        DrawAllLines(CursorTop);
+                        // Clear the previous line in chunks at the time
+                        Console.SetCursorPosition(0, ParentWindow.TabHeight + contentBuffer.Count);
+                        int chunkSize = 4;
+                        int times = (int)Math.Floor( (double)(LinesLength + lastLineLen + chunkSize) / chunkSize + 1);
+                        for(int i = 0; i < times; i++)
+                        {
+                            Console.Write("    "); // Must be length of chunkSize
+                        } 
                         return;
                     }
                     if (contentBuffer[index].Length == 0 && CursorTop > 0)

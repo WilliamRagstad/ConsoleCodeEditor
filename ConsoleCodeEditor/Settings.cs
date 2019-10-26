@@ -15,7 +15,7 @@ namespace ConsoleCodeEditor
 
         public static int tabIndex = 4;
 
-        public static Size InitialBufferSize;
+        public static Size InitialBufferSize; // Unuseful..?
 
         public static bool ResponsiveGUI = false;
 
@@ -26,6 +26,21 @@ namespace ConsoleCodeEditor
 
         public static Color SelectedTabBackground = Color.DarkBlue;
         public static Color LineNumbersForeground = Color.DarkGray;
+
+        public static Color UnsavedChangesNotification_Dock_Foreground = Color.Yellow;
+        public static Color UnsavedChangesNotification_Tab_Foreground = Color.Yellow;
+
+        public static Color DockCurrentLanguage_Foreground = Color.Yellow;
+
+        #endregion
+
+        #region Skin
+
+        public static char TabSeparator = '=';
+        public static char LineIndex_tab_Separator = '#';
+        public static char LineIndexSeparator = '|';
+        public static string UnsavedChangesNotification_Tab = " *";
+        public static string UnsavedChangesNotification_Dock = "<!>";
 
         #endregion
     }

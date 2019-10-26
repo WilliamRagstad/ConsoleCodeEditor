@@ -21,14 +21,14 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             // true / false
             RegexRules.Add(@"true|false", Color.Azure);
 
-            // Functions
-            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
-
             // Statements
             RegexRules.Add(@"def|return|break|continue", Color.YellowGreen);
             RegexRules.Add(@"(do)(?:[\x20\t]*)(?={)", Color.Yellow);
             RegexRules.Add(@"(case)(?:.*)(?=:)", Color.Yellow);
-            RegexRules.Add(@"(if|else|while|for|switch|in|not)", Color.Yellow);
+            RegexRules.Add(@"\W(if|else|while|for|switch|in|not)", Color.Yellow);
+
+            // Functions
+            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
 
             // Operators
             RegexRules.Add(@"\+|-|\*|\/|%|;|=", Color.Aqua);

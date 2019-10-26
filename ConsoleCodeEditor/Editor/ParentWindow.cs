@@ -58,14 +58,22 @@ namespace ConsoleCodeEditor.Editor
             for (int i = 0; i < Editors.Count; i++)
             {
                 if (i == _currentEditorIndex) Console.BackgroundColor = Settings.SelectedTabBackground;
-                Console.Write($" {Editors[i].Filename  +  (!Editors[i].FileIsSaved ? "*" : "")} ");
+                Console.Write($" {Editors[i].Filename}");
+                if (!Editors[i].FileIsSaved)
+                {
+                    Console.ForegroundColor = Settings.UnsavedChangesNotification_Tab_Foreground;
+                    Console.Write(Settings.UnsavedChangesNotification_Tab);
+                    Console.ForegroundColor = Settings.DefaultForeground;
+                }
+                Console.Write(" ");
                 Console.BackgroundColor = Settings.DefaultBackground;
                 Console.Write("|");
             }
             Console.Write('\n');
             for (int i = 0; i < Console.WindowWidth; i++)
             {
-                Console.Write("=");
+                if (Editors.Count > 0 && i == Editors[_currentEditorIndex].LinesLength) Console.Write(Settings.LineIndex_tab_Separator);
+                else Console.Write(Settings.TabSeparator);
             }
             Console.Write('\n');
         }
@@ -86,7 +94,12 @@ namespace ConsoleCodeEditor.Editor
             {
                 Console.SetCursorPosition(0, Console.WindowHeight - 1);
             }
-            if (!cEditor.FileIsSaved) Console.Write("<!>");
+            if (!cEditor.FileIsSaved)
+            {
+                Console.ForegroundColor = Settings.UnsavedChangesNotification_Dock_Foreground;
+                Console.Write("<!>");
+                Console.ForegroundColor = Settings.DefaultForeground;
+            }
             string clearPrevTextPadding = "    ";
             string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
             Console.CursorLeft = Console.WindowWidth - text.Length - 1;
