@@ -45,7 +45,7 @@ I have big ambitions for this project, and feel like if it gets enough attention
 * Preferences page ⚙️
 * Auto detect new versions 📥
 * Add syntax highlighting for more languages!!! 🎉
-* Optimize and speed up performance :bullettrain_front:
+* Optimize and speed up performance :bullettrain_front::dash:
 
 **I highly appreciate** if you want to **help** me with this project!
 Add your own twist or modification, or create your own distribution entirely!
