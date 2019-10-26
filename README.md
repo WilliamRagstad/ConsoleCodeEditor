@@ -42,7 +42,7 @@ I have big ambitions for this project, and feel like if it gets enough attention
 * Custom skin themes support 🎨
 * Text selection 📋
 * Auto indent on newline after open bracket { *(or language specific character)*
-* Preferences page ⚙️
+* Preferences/*Settings* page ⚙️
 * Auto detect new versions 📥
 * Add syntax highlighting for more languages!!! 🎉
 * Optimize and speed up performance :bullettrain_front::dash:
