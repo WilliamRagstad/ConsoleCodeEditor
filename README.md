@@ -37,14 +37,15 @@ Or install a previous version from [here]().
 
 I have big ambitions for this project, and feel like if it gets enough attention, it would be worth implementing the following functionalities:
 
-* Plug-in *or Extensions* support 🔌
-* Custom color themes support 🎨
-* Custom skin themes support 🌈
+* Plug-ins*/Extensions* support 🔌
+* Custom color themes support 🌈
+* Custom skin themes support 🎨
 * Text selection 📋
 * Auto indent on newline after open bracket { *(or language specific character)*
 * Preferences page ⚙️
 * Auto detect new versions 📥
 * Add syntax highlighting for more languages!!! 🎉
+* Optimize and speed up performance :bullettrain_front:
 
 **I highly appreciate** if you want to **help** me with this project!
 Add your own twist or modification, or create your own distribution entirely!
