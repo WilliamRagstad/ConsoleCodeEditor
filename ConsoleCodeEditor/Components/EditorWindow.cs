@@ -171,6 +171,11 @@ namespace ConsoleCodeEditor.Component
                             SaveToFile();
                             FileIsSaved = true;
                             return;
+                        case ConsoleKey.Backspace:
+                            // Remove all spaces
+                            contentBuffer[index] = contentBuffer[index].TrimEnd();
+                            CursorLeft = contentBuffer[index].Length;
+                            return;
                     }
                 }
                 else if (key.Modifiers == ConsoleModifiers.Alt)
