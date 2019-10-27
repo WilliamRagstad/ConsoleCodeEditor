@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Console = Colorful.Console;
 
 namespace ConsoleCodeEditor.Component
@@ -176,13 +177,26 @@ namespace ConsoleCodeEditor.Component
                             contentBuffer[index] = contentBuffer[index].TrimEnd();
                             CursorLeft = contentBuffer[index].Length;
                             return;
+                        case ConsoleKey.O:
+                            OpenFileDialog openFile = new OpenFileDialog();
+                            if (openFile.ShowDialog() == DialogResult.OK)
+                            {
+                                Parent.OpenNewEditor(openFile.FileName);
+                                Parent.DrawTabs();
+                            }
+                            return;
                     }
+                    return;
                 }
                 else if (key.Modifiers == ConsoleModifiers.Alt)
                 {
                     // Change Tab
-                    int tabIndex = int.Parse(key.KeyChar.ToString());
-                    Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    try
+                    {
+                        int tabIndex = int.Parse(key.KeyChar.ToString());
+                        Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    }
+                    catch { }
                     return;
                 }
 
@@ -326,7 +340,6 @@ namespace ConsoleCodeEditor.Component
         {
             DrawAllLines();
         }
-
         public void Runtime()
         {
             DrawLine(CursorTop);

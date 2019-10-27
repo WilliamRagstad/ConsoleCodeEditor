@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Console = Colorful.Console;
 
 namespace ConsoleCodeEditor.Component
@@ -23,6 +24,7 @@ namespace ConsoleCodeEditor.Component
             Editors = new List<Editor>();
             _currentEditorIndex = 0;
             _runtime = new Thread(_runtimeLoop);
+            _runtime.ApartmentState = ApartmentState.STA;
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
         }
 
@@ -37,6 +39,14 @@ namespace ConsoleCodeEditor.Component
         private static int prevWindowWidth;
         private static int prevWindowHeight;
 
+        public void OpenNewEditor(string filepath)
+        {
+            string[] fps = filepath.Split('\\');
+            string filename = fps[fps.Length-1];
+            Editor editor = new Editor(filename, filepath);
+            editor.Initialize();
+            AddEditor(editor);
+        }
         public bool allEditorsSaved()
         {
             for (int i = 0; i < Editors.Count; i++)
@@ -158,7 +168,7 @@ namespace ConsoleCodeEditor.Component
             _responsiveGUI.Abort();
             Console.Clear();
         }
-
+        [STAThread]
         private void _runtimeLoop()
         {
             Editors[_currentEditorIndex].Start();

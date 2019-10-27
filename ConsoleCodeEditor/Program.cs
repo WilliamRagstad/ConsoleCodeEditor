@@ -36,7 +36,7 @@ namespace ConsoleCodeEditor
                 // Create a tmp file somewhere and later save/remove it on exit
                 string tmpFile = "untitled-" + newTmpFileIndex;
                 newTmpFileIndex++;
-                Component.Editor newFile = new Component.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.PlainText.Instance);
+                Component.Editor newFile = new Component.Editor("Untitled", Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.PlainText.Instance);
                 newFile.AddNewLine();
                 ParentWindow.AddEditor(newFile, true);
             }
