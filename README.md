@@ -37,7 +37,7 @@ Or install a previous version from [here]().
 
 I have big ambitions for this project, and feel like if it gets enough attention, it would be worth implementing the following functionalities:
 
-* Plug-ins*/Extensions* support 🔌
+* Plug-ins/*Extensions* support 🔌
 * Custom color themes support 🌈
 * Custom skin themes support 🎨
 * Text selection 📋
