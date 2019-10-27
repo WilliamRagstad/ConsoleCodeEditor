@@ -139,12 +139,10 @@ namespace ConsoleCodeEditor.Component
         {
             // Clear the previous line in chunks at the time
             Console.SetCursorPosition(0, ParentWindow.TabHeight + top);
-            int chunkSize = 4;
-            int times = (int)Math.Floor((double)(LinesLength + lineLength + chunkSize) / chunkSize + 1);
-            for (int i = 0; i < times; i++)
-            {
-                Console.Write("    "); // Must be length of chunkSize
-            }
+            string chunk = "      ";
+            int times = Console.WindowWidth / chunk.Length;
+            for (int i = 0; i < times; i++) Console.Write(chunk);
+            for (int i = 0; i < Console.WindowWidth - chunk.Length * times; i++) Console.Write(" ");
         }
 
         private void DrawLine(int index, bool takeUserInput = true)
