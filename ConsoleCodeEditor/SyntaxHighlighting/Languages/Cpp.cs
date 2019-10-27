@@ -15,5 +15,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
             RegexRules = C.Instance.RegexRules; // Inherit all regex rules from C
         }
+
+        public override bool IndentNextLine(string currentLine) => C.Instance.IndentNextLine(currentLine);
     }
 }

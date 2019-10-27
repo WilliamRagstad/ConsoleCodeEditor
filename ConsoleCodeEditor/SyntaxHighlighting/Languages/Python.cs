@@ -42,5 +42,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             // Comments
             RegexRules.Add("#.*", Color.DarkGray);
         }
+
+        public override bool IndentNextLine(string currentLine) => currentLine.EndsWith(":");
     }
 }

@@ -13,7 +13,8 @@ namespace ConsoleCodeEditor
         public static string cceHome = userDirectory + @".cce\";
         public static string tmpFilepath = cceHome + @"tmp\";
 
-        public static int tabIndex = 4;
+        public static string Indents = "    ";
+        public static bool AutoIndent = true;
 
         public static Size InitialBufferSize; // Unuseful..?
 
@@ -24,13 +25,15 @@ namespace ConsoleCodeEditor
         public static Color DefaultForeground = Color.LightGray;
         public static Color DefaultBackground = Color.Black;
 
+        public static Color TabForeground = Color.Gray;
         public static Color SelectedTabBackground = Color.DarkBlue;
-        public static Color LineNumbersForeground = Color.DarkGray;
+        public static Color SelectedTabForeround = Color.White;
+        public static Color LineNumbersForeground = Color.Gray;
 
         public static Color UnsavedChangesNotification_Dock_Foreground = Color.Yellow;
         public static Color UnsavedChangesNotification_Tab_Foreground = Color.Yellow;
 
-        public static Color DockCurrentLanguage_Foreground = Color.Yellow;
+        public static Color DockCurrentLanguage_Foreground = Color.DarkViolet;
 
         #endregion
 

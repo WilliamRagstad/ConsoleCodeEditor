@@ -48,14 +48,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
-    <Compile Include="Editor\EditorWindow.cs" />
+    <Compile Include="Components\EditorWindow.cs" />
+    <Compile Include="Components\Form Controls\BaseControl.cs" />
+    <Compile Include="Components\Form Controls\Text.cs" />
+    <Compile Include="Components\FormsWindow.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Python.cs" />
     <Compile Include="SyntaxHighlighting\Languages\C.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Cpp.cs" />
     <Compile Include="SyntaxHighlighting\Languages\CSharp.cs" />
     <Compile Include="SyntaxHighlighting\Languages\PlainText.cs" />
-    <Compile Include="Editor\ParentWindow.cs" />
+    <Compile Include="Components\ParentWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />

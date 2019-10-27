@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Console = Colorful.Console;
 
-namespace ConsoleCodeEditor.Editor
+namespace ConsoleCodeEditor.Component
 {
     class Editor
     {
@@ -135,17 +135,22 @@ namespace ConsoleCodeEditor.Editor
             for (int i = startIndex; i < contentBuffer.Count; i++) DrawLine(i, false);
         }
 
-        private void ClearLine(int top)
+        private void ClearLine(int top, int lineLength)
         {
-            Console.SetCursorPosition(0, top);
-            for (int j = 0; j < Console.BufferWidth; j++) Console.Write(" ");
+            // Clear the previous line in chunks at the time
+            Console.SetCursorPosition(0, ParentWindow.TabHeight + top);
+            int chunkSize = 4;
+            int times = (int)Math.Floor((double)(LinesLength + lineLength + chunkSize) / chunkSize + 1);
+            for (int i = 0; i < times; i++)
+            {
+                Console.Write("    "); // Must be length of chunkSize
+            }
         }
 
         private void DrawLine(int index, bool takeUserInput = true)
         {
-            int row = index + ParentWindow.TabHeight;
-            ClearLine(row);
-            Console.SetCursorPosition(LinesLength - index.ToString().Length, row);
+            ClearLine(index, contentBuffer[index].Length);
+            Console.SetCursorPosition(LinesLength - index.ToString().Length, index + ParentWindow.TabHeight);
             Console.ForegroundColor = Settings.LineNumbersForeground;
             Console.Write($"{index}{Settings.LineIndexSeparator} ");
             Console.ForegroundColor = Settings.DefaultForeground;
@@ -184,9 +189,11 @@ namespace ConsoleCodeEditor.Editor
                     FileIsSaved = false;
                     string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
                     contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
-                    contentBuffer.Insert(CursorTop + 1, leftHandSide);
+                    bool autoIndent = LanguageSyntax.IndentNextLine(contentBuffer[index]);
+                    contentBuffer.Insert(CursorTop + 1, (autoIndent ? Settings.Indents : "") + leftHandSide);
                     CursorTop++;
-                    CursorLeft = 0;
+                    if (autoIndent) CursorLeft = Settings.Indents.Length;
+                    else CursorLeft = 0;
                     if (prevLineIndexLen != LinesLength)
                     {
                         Parent.DrawTabs();
@@ -241,21 +248,17 @@ namespace ConsoleCodeEditor.Editor
                     FileIsSaved = false;
                     if (CursorLeft == 0 && CursorTop > 0)
                     {
+                        int prevLinesLength = LinesLength;
                         int lastLineLen = contentBuffer[contentBuffer.Count - 1].Length;
                         CursorLeft = contentBuffer[index - 1].Length;
                         contentBuffer[index - 1] = contentBuffer[index - 1] + contentBuffer[index];
                         contentBuffer.RemoveAt(index);
                         CursorTop--;
                         Parent.DrawTabs();
-                        DrawAllLines(CursorTop);
+                        if (prevLinesLength == LinesLength) DrawAllLines(CursorTop);
+                        else DrawAllLines();
                         // Clear the previous line in chunks at the time
-                        Console.SetCursorPosition(0, ParentWindow.TabHeight + contentBuffer.Count);
-                        int chunkSize = 4;
-                        int times = (int)Math.Floor( (double)(LinesLength + lastLineLen + chunkSize) / chunkSize + 1);
-                        for(int i = 0; i < times; i++)
-                        {
-                            Console.Write("    "); // Must be length of chunkSize
-                        } 
+                        ClearLine(contentBuffer.Count, contentBuffer[index - 1].Length);
                         return;
                     }
                     if (contentBuffer[index].Length == 0 && CursorTop > 0)
@@ -272,13 +275,19 @@ namespace ConsoleCodeEditor.Editor
                 }
                 if (key.Key == ConsoleKey.Delete)
                 {
+                    int prevLinesLength = LinesLength;
                     FileIsSaved = false;
                     if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
                     {
                         contentBuffer[index] = contentBuffer[index] + contentBuffer[index + 1];
                         contentBuffer.RemoveAt(index + 1);
-                        Parent.Draw();
-                        DrawAllLines();
+                        if (prevLinesLength != LinesLength)
+                        {
+                            Parent.DrawTabs();
+                            DrawAllLines();
+                        }
+                        else DrawAllLines(CursorTop);
+                        ClearLine(contentBuffer.Count, contentBuffer[index].Length);
                         return;
                     }
                     if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
@@ -287,10 +296,19 @@ namespace ConsoleCodeEditor.Editor
                 if (key.Key == ConsoleKey.Tab)
                 {
                     FileIsSaved = false;
-                    for (int i = 0; i < Settings.tabIndex; i++)
+                    contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.Indents);
+                    CursorLeft += Settings.Indents.Length;
+                    return;
+                }
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    if (Parent.allEditorsSaved())
                     {
-                        contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, " ");
-                        CursorLeft++;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        // Make sure to save all editors first
                     }
                     return;
                 }

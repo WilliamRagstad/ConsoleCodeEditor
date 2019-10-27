@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Console = Colorful.Console;
 
-namespace ConsoleCodeEditor.Editor
+namespace ConsoleCodeEditor.Component
 {
     class ParentWindow
     {
@@ -37,6 +37,15 @@ namespace ConsoleCodeEditor.Editor
         private static int prevWindowWidth;
         private static int prevWindowHeight;
 
+        public bool allEditorsSaved()
+        {
+            for (int i = 0; i < Editors.Count; i++)
+            {
+                if (!Editors[i].FileIsSaved) return false;
+            }
+            return true;
+        }
+
         public void SetCurrentEditor(int index)
         {
             if (index < Editors.Count)
@@ -57,16 +66,22 @@ namespace ConsoleCodeEditor.Editor
             Console.SetCursorPosition(0,0);
             for (int i = 0; i < Editors.Count; i++)
             {
-                if (i == _currentEditorIndex) Console.BackgroundColor = Settings.SelectedTabBackground;
+                Console.ForegroundColor = Settings.TabForeground;
+                if (i == _currentEditorIndex)
+                {
+                    Console.BackgroundColor = Settings.SelectedTabBackground;
+                    Console.ForegroundColor = Settings.SelectedTabForeround;
+                }
                 Console.Write($" {Editors[i].Filename}");
                 if (!Editors[i].FileIsSaved)
                 {
                     Console.ForegroundColor = Settings.UnsavedChangesNotification_Tab_Foreground;
                     Console.Write(Settings.UnsavedChangesNotification_Tab);
-                    Console.ForegroundColor = Settings.DefaultForeground;
+                    Console.ForegroundColor = Settings.TabForeground;
                 }
                 Console.Write(" ");
                 Console.BackgroundColor = Settings.DefaultBackground;
+                Console.ForegroundColor = Settings.TabForeground;
                 Console.Write("|");
             }
             Console.Write('\n');
@@ -100,10 +115,17 @@ namespace ConsoleCodeEditor.Editor
                 Console.Write("<!>");
                 Console.ForegroundColor = Settings.DefaultForeground;
             }
-            string clearPrevTextPadding = "    ";
-            string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {cEditor.LanguageSyntax.DisplayName}";
+            string clearPrevTextPadding = "    "; // Placeholder!!!
+
+            Console.ForegroundColor = Settings.DefaultForeground;
+            string languageName = cEditor.LanguageSyntax.DisplayName;
+            string text = clearPrevTextPadding + $"ln {cEditor.CursorTop}, col {cEditor.CursorLeft}, enc {cEditor.FileEncoding.HeaderName.ToUpper()}, type {languageName}";
             Console.CursorLeft = Console.WindowWidth - text.Length - 1;
             Console.Write(text);
+            // Re-write language name but in color
+            Console.CursorLeft = Console.WindowWidth - languageName.Length - 1;
+            Console.ForegroundColor = Settings.DockCurrentLanguage_Foreground;
+            Console.Write(languageName);
         }
         public void Start()
         {

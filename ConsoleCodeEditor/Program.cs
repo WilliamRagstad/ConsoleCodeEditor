@@ -8,12 +8,12 @@ namespace ConsoleCodeEditor
 {
     class Program
     {
-        public static Editor.ParentWindow ParentWindow;
+        public static Component.ParentWindow ParentWindow;
         private static int newTmpFileIndex = 0;
         static void Main(string[] args)
         {
             // Initialize a new parent window
-            ParentWindow = new Editor.ParentWindow();
+            ParentWindow = new Component.ParentWindow();
             Settings.InitialBufferSize = new System.Drawing.Size(Console.BufferWidth, Console.BufferWidth);
 
             args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
@@ -36,7 +36,7 @@ namespace ConsoleCodeEditor
                 // Create a tmp file somewhere and later save/remove it on exit
                 string tmpFile = "untitled-" + newTmpFileIndex;
                 newTmpFileIndex++;
-                Editor.Editor newFile = new Editor.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.PlainText.Instance);
+                Component.Editor newFile = new Component.Editor(tmpFile, Settings.tmpFilepath + tmpFile, SyntaxHighlighting.Languages.PlainText.Instance);
                 newFile.AddNewLine();
                 ParentWindow.AddEditor(newFile, true);
             }
@@ -53,7 +53,7 @@ namespace ConsoleCodeEditor
                     string[] fps = filepath.Split('\\');
                     string filename = fps[fps.Length - 1];
 
-                    Editor.Editor openFileEditor = new Editor.Editor(filename, filepath); // This will trigger the autodetect language method
+                    Component.Editor openFileEditor = new Component.Editor(filename, filepath); // This will trigger the autodetect language method
                     openFileEditor.Initialize();
                     ParentWindow.AddEditor(
                         openFileEditor

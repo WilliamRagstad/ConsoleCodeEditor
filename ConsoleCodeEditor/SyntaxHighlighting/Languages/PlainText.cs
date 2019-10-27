@@ -10,5 +10,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
     public class PlainText : LanguageSyntax<PlainText>
     {
         public PlainText() { DisplayName = "Plain Text";  }
+
+        public override bool IndentNextLine(string currentLine) => false;
     }
 }

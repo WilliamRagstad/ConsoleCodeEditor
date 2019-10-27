@@ -10,6 +10,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting
     {
         public string DisplayName;
         public Dictionary<string, System.Drawing.Color> RegexRules;
+        public abstract bool IndentNextLine(string currentLine);
         public LanguageSyntax()
         {
             DisplayName = "Undefined";

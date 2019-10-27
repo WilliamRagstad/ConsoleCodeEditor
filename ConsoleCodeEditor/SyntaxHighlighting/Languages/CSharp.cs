@@ -14,5 +14,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             DisplayName = "C#";
             RegexRules.Add("if", Color.Yellow);
         }
+
+        public override bool IndentNextLine(string currentLine) => C.Instance.IndentNextLine(currentLine);
     }
 }
