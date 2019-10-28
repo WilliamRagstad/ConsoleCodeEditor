@@ -12,7 +12,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public CSharp()
         {
             DisplayName = "C#";
-            RegexRules.Add("if", Color.Yellow);
+
+            RegexRules = C.Instance.RegexRules; // Inherit all regex rules from C
+            RegexRules.Add("class|public|private|static|abstract|virtual", Color.Aqua);
         }
 
         public override bool IndentNextLine(string currentLine) => C.Instance.IndentNextLine(currentLine);

@@ -16,7 +16,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"(\w)+", Color.Lime);
 
             // Primitive Data Types
-            RegexRules.Add(@"int|float|char|short|long|double|decimal|signed|unsigned", Color.DarkViolet);
+            RegexRules.Add(@"int|float|char|short|long|double|decimal|signed|unsigned|void", Color.DarkViolet);
 
             // true / false
             RegexRules.Add(@"true|false", Color.Azure);

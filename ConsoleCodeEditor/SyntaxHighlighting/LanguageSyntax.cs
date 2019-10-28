@@ -13,7 +13,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting
         public abstract bool IndentNextLine(string currentLine);
         public LanguageSyntax()
         {
-            DisplayName = "Undefined";
+            DisplayName = "[Unknown]";
             RegexRules = new Dictionary<string, System.Drawing.Color>();
             RegexRules.Add(".+", Settings.DefaultForeground); // Default color.
         }

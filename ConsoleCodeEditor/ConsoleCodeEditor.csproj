@@ -53,6 +53,7 @@
     <Compile Include="Components\Form Controls\Text.cs" />
     <Compile Include="Components\FormsWindow.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
+    <Compile Include="SyntaxHighlighting\Languages\Java.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Python.cs" />
     <Compile Include="SyntaxHighlighting\Languages\C.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Cpp.cs" />

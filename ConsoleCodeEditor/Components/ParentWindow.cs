@@ -26,6 +26,9 @@ namespace ConsoleCodeEditor.Component
             _runtime = new Thread(_runtimeLoop);
             _runtime.ApartmentState = ApartmentState.STA;
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
+
+            Console.TreatControlCAsInput = true;
+            
         }
 
         public List<Editor> Editors;
@@ -39,14 +42,31 @@ namespace ConsoleCodeEditor.Component
         private static int prevWindowWidth;
         private static int prevWindowHeight;
 
-        public void OpenNewEditor(string filepath)
+        public void OpenFileEditor(string filepath)
+        {
+            string filename = ParseFileName(filepath);
+            OpenFileEditor(filename, filepath);
+        }
+        public static string ParseFileName(string filepath)
         {
             string[] fps = filepath.Split('\\');
-            string filename = fps[fps.Length-1];
+            string filename = fps[fps.Length - 1];
+            return filename;
+        }
+        public void OpenFileEditor(string filename, string filepath)
+        {
             Editor editor = new Editor(filename, filepath);
             editor.Initialize();
             AddEditor(editor);
         }
+        public void NewFileEditor(string filename, string filepath)
+        {
+            Editor newFile = new Editor(filename, filepath);
+            newFile.AddNewLine();
+            newFile.FileIsSaved = false;
+            AddEditor(newFile, true);
+        }
+        public void NewFileEditor() => NewFileEditor("Untitled", null);
         public bool allEditorsSaved()
         {
             for (int i = 0; i < Editors.Count; i++)

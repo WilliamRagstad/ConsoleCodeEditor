@@ -66,8 +66,29 @@ namespace ConsoleCodeEditor.Component
         public ParentWindow Parent;
 
         private void SaveToFile() {
-            File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
-            FileIsSaved = true;
+            if (Filepath != null && !string.IsNullOrEmpty(Filepath))
+            {
+                File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
+                FileIsSaved = true;
+            }
+            else
+            {
+                // Ask where to save the file
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    Filepath = sfd.FileName;
+                    Filename = ParentWindow.ParseFileName(sfd.FileName);
+                    SaveToFile(); // Save with the new values
+                    SyntaxHighlighting.LanguageSyntax prevLanSyntax = LanguageSyntax;
+                    LanguageSyntax = DetectLanguageSyntax();
+                    if (LanguageSyntax != prevLanSyntax)
+                    {
+                        Parent.Draw();
+                        DrawAllLines();
+                    }
+                }
+            }
         }
         private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
         public int LinesLength => (contentBuffer.Count - 1).ToString().Length;
@@ -88,8 +109,9 @@ namespace ConsoleCodeEditor.Component
                 case "svg": return SyntaxHighlighting.Languages.HTML.Instance;
                 case "html": return SyntaxHighlighting.Languages.HTML.Instance;
                 case "htm": return SyntaxHighlighting.Languages.HTML.Instance;
+                */
                 case "java": return SyntaxHighlighting.Languages.Java.Instance;
-                case "class": return SyntaxHighlighting.Languages.Java.Instance;
+                case "class": return SyntaxHighlighting.Languages.Java.Instance;/*
                 case "js": return SyntaxHighlighting.Languages.JavaScript.Instance;
                 case "json": return SyntaxHighlighting.Languages.JSON.Instance;
                 case "kiw": return SyntaxHighlighting.Languages.KiwiShell.Instance;
@@ -111,6 +133,7 @@ namespace ConsoleCodeEditor.Component
                 default: return SyntaxHighlighting.Languages.PlainText.Instance;
             }
         }
+        public SyntaxHighlighting.LanguageSyntax DetectLanguageSyntax() => DetectLanguageSyntax(Filepath);
         public void WriteSyntaxHighlight(string text)
         {
             if (text == null) return;
@@ -122,7 +145,9 @@ namespace ConsoleCodeEditor.Component
                 Match match = regex.Match(text);
                 while (match.Success)
                 {
-                    Console.CursorLeft = startIndent + match.Index;
+                    int curLeft = startIndent + match.Index;
+                    if (curLeft >= 0 && curLeft < Console.BufferWidth) Console.CursorLeft = curLeft;
+                    else break;
                     Console.ForegroundColor = LanguageSyntax.RegexRules.ElementAt(i).Value;
                     Console.Write(match.Value);
 
@@ -168,7 +193,7 @@ namespace ConsoleCodeEditor.Component
                 {
                     switch(key.Key)
                     {
-                        case ConsoleKey.S:
+                        case ConsoleKey.L:
                             SaveToFile();
                             FileIsSaved = true;
                             return;
@@ -181,9 +206,19 @@ namespace ConsoleCodeEditor.Component
                             OpenFileDialog openFile = new OpenFileDialog();
                             if (openFile.ShowDialog() == DialogResult.OK)
                             {
-                                Parent.OpenNewEditor(openFile.FileName);
+                                Parent.OpenFileEditor(openFile.FileName);
+                                Parent.SetCurrentEditor(Parent.Editors.Count - 1);
                                 Parent.DrawTabs();
                             }
+                            return;
+                        case ConsoleKey.N:
+                            Parent.NewFileEditor();
+                            // Switch to that editor
+                            Parent.SetCurrentEditor(Parent.Editors.Count - 1);
+                            return;
+                        case ConsoleKey.R:
+                            // Run file
+
                             return;
                     }
                     return;
