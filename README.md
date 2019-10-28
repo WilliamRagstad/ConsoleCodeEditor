@@ -41,7 +41,7 @@ I have big ambitions for this project, and feel like if it gets enough attention
 * Custom color themes support 🌈
 * Custom skin themes support 🎨
 * Text selection 📋
-* Auto indent on newline after open bracket { *(or language specific character)*
+* ~~Auto indent on newline after open bracket { *(or language specific character)*~~
 * Preferences/*Settings* page ⚙️
 * Auto detect new versions 📥
 * Add syntax highlighting for more languages!!! 🎉
@@ -49,4 +49,3 @@ I have big ambitions for this project, and feel like if it gets enough attention
 
 **I highly appreciate** if you want to **help** me with this project!
 Add your own twist or modification, or create your own distribution entirely!
-
