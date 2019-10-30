@@ -28,7 +28,6 @@ namespace ConsoleCodeEditor.Component
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
 
             Console.TreatControlCAsInput = true;
-            
         }
 
         public List<Editor> Editors;

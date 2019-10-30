@@ -99,6 +99,7 @@ namespace ConsoleCodeEditor.Component
             switch(fileExt)
             {
                 case "txt": return SyntaxHighlighting.Languages.PlainText.Instance;
+                case "an": return SyntaxHighlighting.Languages.AdvancedNote.Instance;
                 //case "bat": return SyntaxHighlighting.Languages.Batch.Instance;
                 //case "cmd": return SyntaxHighlighting.Languages.Batch.Instance;
                 case "c": return SyntaxHighlighting.Languages.C.Instance;
@@ -212,6 +213,7 @@ namespace ConsoleCodeEditor.Component
                             }
                             return;
                         case ConsoleKey.N:
+                            // SOMETHING IS VERY WRONG HERE
                             Parent.NewFileEditor();
                             // Switch to that editor
                             Parent.SetCurrentEditor(Parent.Editors.Count - 1);

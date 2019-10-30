@@ -35,7 +35,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"<|>|&&|\|\||!|<=|>=", Color.DarkGray);
             RegexRules.Add(@"\[|\]|\(|\)|{|}", Color.Brown);
 
-            RegexRules.Add(@"(?![^\w])[\d.\-]+x?[\d]*[fd]?", Color.Orange); // Numbers (f,d suffix) (0x0)
+            RegexRules.Add(@"-?(?![^\w])\d+x[\dA-F]+|-?(?![^\w])[\d.]+[fd]?", Color.Orange); // Numbers (f,d suffix) (0x0)
             RegexRules.Add("\"([^\"])*\"", Color.Green); // Strings
             RegexRules.Add(@"'(\\?[^'])?'", Color.LightSeaGreen); // Chars
 
