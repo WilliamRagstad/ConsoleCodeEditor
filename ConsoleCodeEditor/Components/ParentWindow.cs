@@ -80,6 +80,7 @@ namespace ConsoleCodeEditor.Component
             if (index < Editors.Count)
             {
                 _currentEditorIndex = index;
+                SetTitle();
                 Draw();
                 Editors[_currentEditorIndex].DrawAllLines();
             }
@@ -113,6 +114,13 @@ namespace ConsoleCodeEditor.Component
                 Console.ForegroundColor = Settings.TabForeground;
                 Console.Write("|");
             }
+
+            // Clear the rest of the line
+            while (Console.CursorLeft < Console.WindowWidth - 1)
+            {
+                Console.Write(" ");
+            }
+
             Console.Write('\n');
             for (int i = 0; i < Console.WindowWidth; i++)
             {
@@ -159,6 +167,7 @@ namespace ConsoleCodeEditor.Component
         public void Start()
         {
             if(Settings.ResponsiveGUI) UpdateGUI();
+            SetTitle();
             Draw();
             _keepRuntimeAlive = true;
             if (Settings.ResponsiveGUI)
@@ -221,6 +230,20 @@ namespace ConsoleCodeEditor.Component
                 return true;
             }
             return false;
+        }
+
+        public void SetTitle()
+        {
+            string title = "CCE";
+            string currentFile = Editors[_currentEditorIndex].Filename;
+            if (!Editors[_currentEditorIndex].FileIsSaved) currentFile += Settings.UnsavedChangesNotification_Tab;
+
+            string titlebuffer = title; // Initialize to title
+
+            int padding = (Console.WindowWidth * 2 - title.Length) / 2 - currentFile.Length / 2;
+            for (int i = 0; i < padding; i++) titlebuffer += " ";
+            titlebuffer += currentFile;
+            Console.Title = titlebuffer;
         }
     }
 }
