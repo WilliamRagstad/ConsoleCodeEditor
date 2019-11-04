@@ -17,11 +17,43 @@ Take me to the [installation](#installation) :arrow_right:
 
 ## Preview
 
-![Preview GIF](preview.gif)
+<div align="center">
+    <img alt="Preview GIF" src="preview.gif">
+    <p>
+        <em>(This displays an older version of CCE)</em>
+    </p>
+</div>
+
+<div align="center">
+    <div>
+        <img alt="Preview GIF" src="open_with.gif" width="75%">
+        <p>
+            Open any file with CCE!
+        </p>
+    </div>
+    <div>
+        <img alt="Preview GIF" src="drag_open.gif" width="75%">
+        <p>
+            Drag and drop multiple files to open them as tabs in CCE!
+        </p>
+    </div>
+</div>
 
 ## Usage
 
-The editor has many features including real-time syntax highlighting and keyboard shortcuts. 
+The editor has many features including real-time syntax highlighting and keyboard shortcuts.
+Here is a list of all keyboard shortcuts.
+
+| Keystrokes                                                   | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <kbd>:arrow_left:</kbd><kbd>:arrow_up:</kbd><kbd>:arrow_down:</kbd><kbd>:arrow_right:</kbd> | Move around in the document.                                 |
+| <kbd>CTRL</kbd>+<kbd>:arrow_left:</kbd>                      | Move to the leftmost position on the current line.           |
+| <kbd>CTRL</kbd>+<kbd>:arrow_right:</kbd>                     | Move to the rightmost position on the current line.          |
+| <kbd>ALT</kbd>+<kbd>0</kbd>,<kbd>1</kbd>,<kbd>2</kbd>,... or <kbd>9</kbd> | Switch between open tabs.                                    |
+| <kbd>CTRL</kbd>+<kbd>N</kbd>                                 | New untitled file.                                           |
+| <kbd>CTRL</kbd>+<kbd>O</kbd>                                 | Open new file.                                               |
+| <kbd>CTRL</kbd>+<kbd>L</kbd>                                 | Save current file. <em><a href="https://stackoverflow.com/questions/39476157/detect-ctrl-s-in-console" target="_blank">(Reason)</a></em> |
+| <kbd>ESC</kbd>                                               | Close the program **if all files are saved**.                |
 
 ## Installation
 
@@ -31,7 +63,7 @@ Download the latest version of CCE below.
 | ------------------ | ------------------ | ------------------ | ------------------ |
 | [Download Alpha]() | [Download Alpha]() | [Download Alpha]() | [Download Alpha]() |
 
-Or install a previous version from [here]().
+~~Or install a previous version from [here]().~~
 
 ## Future
 
@@ -41,7 +73,6 @@ I have big ambitions for this project, and feel like if it gets enough attention
 * Custom color themes support 🌈
 * Custom skin themes support 🎨
 * Text selection 📋
-* ~~Auto indent on newline after open bracket { *(or language specific character)*~~
 * Preferences/*Settings* page ⚙️
 * Auto detect new versions 📥
 * Add syntax highlighting for more languages!!! 🎉
