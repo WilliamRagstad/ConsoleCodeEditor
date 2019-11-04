@@ -12,10 +12,13 @@ namespace ConsoleCodeEditor
         {
             Arguments arguments = new Arguments();
             arguments.Dictionary = new Dictionary<string, List<string>>();
+            arguments.KeylessArguments = new List<string>();
+            bool isKeyless = true;
             for(int i = 0; i < args.Length; i++)
             {
-                if (args[i][0] == keySelector)
+                if (args[i].Length > 0 && args[i][0] == keySelector)
                 {
+                    isKeyless = false;
                     string key = args[i].Replace(keySelector.ToString(), "");
                     List<string> values = new List<string>();
                     while(i < args.Length - 1)
@@ -34,11 +37,16 @@ namespace ConsoleCodeEditor
                     }
                     if (!arguments.Dictionary.ContainsKey(key)) arguments.Dictionary.Add(key, values);
                 }
+                else if (isKeyless)
+                {
+                    arguments.KeylessArguments.Add(args[i]);
+                }
             }
 
             return arguments;
         }
 
+        public List<string> KeylessArguments;
         public Dictionary<string, List<string>> Dictionary;
 
         public List<string> this[string key]
@@ -48,8 +56,16 @@ namespace ConsoleCodeEditor
                 return Dictionary[key];
             }
         }
+        public string this[int key]
+        {
+            get
+            {
+                return KeylessArguments[key];
+            }
+        }
+
         public bool Contains(string key) => Dictionary.ContainsKey(key);
-        public int Length => Dictionary.Count;
+        public int Length => KeylessArguments.Count + Dictionary.Count;
 
         public bool FindPattern(string key, params Type[] types)
         {

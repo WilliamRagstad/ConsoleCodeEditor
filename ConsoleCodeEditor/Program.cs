@@ -9,55 +9,65 @@ namespace ConsoleCodeEditor
     class Program
     {
         public static Component.ParentWindow ParentWindow;
+
+        private static string helpMessage = "Usage:\n" +
+                    "  (/new)\t\t\t\tStart editing a new file.\n" +
+                    "  (/open) (file1) (file2) ...\tOpen and edit an existing file.\n\n" +
+                    "See more help:\n" +
+                    "  https://github.com/WilliamRagstad/ConsoleCodeEditor";
         static void Main(string[] args)
         {
             // Initialize a new parent window
             ParentWindow = new Component.ParentWindow();
             Settings.InitialBufferSize = new System.Drawing.Size(Console.BufferWidth, Console.BufferWidth);
 
+            //args = new string[0];
+            //args = new[] { "/open" };
             //args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
+            //args = new[] { "exampleFile.c", "exampleFile2.py", "/help", "open" };
             Arguments arguments = Arguments.Parse(args);
-
-            if (arguments.Length == 0)
-            {
-                Console.WriteLine(
-                    "Usage:\n" +
-                    "  /new\t\t\t\tStart editing a new file.\n"+
-                    "  /open (file1) [file2] ...\tOpen and edit an existing file.\n\n" +
-                    "See more help:\n" +
-                    "  https://github.com/WilliamRagstad/ConsoleCodeEditor"
-                );
-                return;
-            }
             
-            if (arguments.FindPattern("new"))
+            if (arguments.FindPattern("new") || arguments.Length == 0)
             {
                 // Create a tmp file somewhere and later save/remove it on exit
-                if (arguments["new"].Count == 0)
+                if (arguments.Length == 0)
                 {
                     ParentWindow.NewFileEditor();
                 }
-                else
+                else if (arguments["new"].Count == 0)
+                {
+                    ParentWindow.NewFileEditor();
+                }
+                else if(arguments["new"].Count > 0)
                 {
                     for (int i = 0; i < arguments["new"].Count; i++)
                     {
                         string filepath = arguments["new"][i];
                         string filename = Component.ParentWindow.ParseFileName(filepath);
-                        ParentWindow.NewFileEditor(filename, filepath);
+                        ParentWindow.NewFileEditor(filename, filepath, Component.Editor.DetectLanguageSyntax(filepath));
                     }
                 }
             }
-            if (arguments.FindPattern("open"))
+            else // If it's only filepaths passed with or without /open infront
             {
-                if (arguments["open"].Count == 0)
+                if (arguments.FindPattern("open"))
                 {
-                    Console.WriteLine("Missing file(s) to open!");
-                    return;
+                    if (arguments["open"].Count == 0)
+                    {
+                        Console.WriteLine("Missing file(s) to open!");
+                        return;
+                    }
+                    for (int i = 0; i < arguments["open"].Count; i++)
+                    {
+                        ParentWindow.OpenFileEditor(arguments["open"][i]);
+                    }
                 }
-                for (int i = 0; i < arguments["open"].Count; i++)
+                else
                 {
-                    string filepath = arguments["open"][i];
-                    ParentWindow.OpenFileEditor(filepath);
+                    for (int i = 0; i < arguments.KeylessArguments.Count; i++)
+                    {
+                        ParentWindow.OpenFileEditor(arguments[i]);
+                    }
                 }
             }
 

@@ -58,14 +58,14 @@ namespace ConsoleCodeEditor.Component
             editor.Initialize();
             AddEditor(editor);
         }
-        public void NewFileEditor(string filename, string filepath)
+        public void NewFileEditor(string filename, string filepath, SyntaxHighlighting.LanguageSyntax language)
         {
-            Editor newFile = new Editor(filename, filepath);
+            Editor newFile = new Editor(filename, filepath, language);
             newFile.AddNewLine();
             newFile.FileIsSaved = false;
             AddEditor(newFile, true);
         }
-        public void NewFileEditor() => NewFileEditor("Untitled", null);
+        public void NewFileEditor() => NewFileEditor("Untitled", null, SyntaxHighlighting.Languages.PlainText.Instance);
         public bool allEditorsSaved()
         {
             for (int i = 0; i < Editors.Count; i++)

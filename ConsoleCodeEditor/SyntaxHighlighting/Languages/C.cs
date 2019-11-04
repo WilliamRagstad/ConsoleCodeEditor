@@ -41,6 +41,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
             // Comments
             RegexRules.Add("//.*", Color.DarkGray);
+            // Add multi-line comments
         }
 
         public override bool IndentNextLine(string currentLine) => currentLine.EndsWith("{");
