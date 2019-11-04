@@ -193,7 +193,7 @@ namespace ConsoleCodeEditor.Component
 
                 if (key.Modifiers == ConsoleModifiers.Control)
                 {
-                    switch(key.Key)
+                    switch (key.Key)
                     {
                         case ConsoleKey.L:
                             SaveToFile();
@@ -222,6 +222,23 @@ namespace ConsoleCodeEditor.Component
                         case ConsoleKey.R:
                             // Run file
 
+                            return;
+                        case ConsoleKey.RightArrow:
+                            if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
+                            {
+                                CursorTop++;
+                                CursorLeft = 0;
+                            }
+                            else CursorLeft = contentBuffer[index].Length;
+                            return;
+                        case ConsoleKey.LeftArrow:
+                            if (CursorLeft == 0 && CursorTop > 0)
+                            {
+                                CursorTop--;
+                                CursorLeft = contentBuffer[index - 1].Length;
+                                DrawLine(index); // Draw the "previous" line
+                            }
+                            else CursorLeft = 0;
                             return;
                     }
                     return;
