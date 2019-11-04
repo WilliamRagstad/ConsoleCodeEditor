@@ -55,7 +55,7 @@ namespace ConsoleCodeEditor.Component
                 if (value != _fileIsSaved && Parent != null)
                 {
                     _fileIsSaved = value;
-                    Parent.DrawDock();
+                    Parent.DrawDock(true);
                     Parent.DrawTabs();
                     Parent.SetTitle();
                 }

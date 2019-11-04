@@ -116,10 +116,7 @@ namespace ConsoleCodeEditor.Component
             }
 
             // Clear the rest of the line
-            while (Console.CursorLeft < Console.WindowWidth - 1)
-            {
-                Console.Write(" ");
-            }
+            while (Console.CursorLeft < Console.WindowWidth - 1) Console.Write(" ");
 
             Console.Write('\n');
             for (int i = 0; i < Console.WindowWidth; i++)
@@ -141,6 +138,11 @@ namespace ConsoleCodeEditor.Component
                     Console.Write("=");
                 }
                 if (Console.WindowWidth != Console.BufferWidth) Console.Write('\n');
+
+                // Clear the rest of the line
+                while (Console.CursorLeft < Console.WindowWidth - 1) Console.Write(" ");
+                Console.CursorLeft = 0;
+
             }
             else
             {
