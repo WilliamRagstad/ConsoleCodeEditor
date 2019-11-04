@@ -235,14 +235,17 @@ namespace ConsoleCodeEditor.Component
         public void SetTitle()
         {
             string title = "CCE";
-            string currentFile = Editors[_currentEditorIndex].Filename;
-            if (!Editors[_currentEditorIndex].FileIsSaved) currentFile += Settings.UnsavedChangesNotification_Tab;
-
             string titlebuffer = title; // Initialize to title
 
-            int padding = (Console.WindowWidth * 2 - title.Length) / 2 - currentFile.Length / 2;
-            for (int i = 0; i < padding; i++) titlebuffer += " ";
-            titlebuffer += currentFile;
+            if (Editors.Count > 0)
+            {
+                string currentFile = Editors[_currentEditorIndex].Filename;
+                if (!Editors[_currentEditorIndex].FileIsSaved) currentFile += Settings.UnsavedChangesNotification_Tab;
+
+                int padding = (Console.WindowWidth * 2 - title.Length) / 2 - currentFile.Length / 2;
+                for (int i = 0; i < padding; i++) titlebuffer += " ";
+                titlebuffer += currentFile;
+            }
             Console.Title = titlebuffer;
         }
     }
