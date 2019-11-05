@@ -26,20 +26,19 @@ namespace ConsoleCodeEditor.Component
             _runtime = new Thread(_runtimeLoop);
             _runtime.ApartmentState = ApartmentState.STA;
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
-
-            Console.TreatControlCAsInput = true;
         }
 
         public List<Editor> Editors;
+        public static int TabHeight = 2;
+        public static int DockHeight = 2;
         private int _currentEditorIndex;
         private Thread _runtime;
         private Thread _responsiveGUI;
         private bool _keepRuntimeAlive;
         private bool _keepResponsiveGUIAlive;
-        public static int TabHeight = 2;
-        public static int DockHeight = 2;
-        private static int prevWindowWidth;
-        private static int prevWindowHeight;
+        private static int _prevWindowWidth;
+        private static int _prevWindowHeight;
+        private KeyHook _lowLevelKeyHook;
 
         public void OpenFileEditor(string filepath)
         {
@@ -130,7 +129,7 @@ namespace ConsoleCodeEditor.Component
         {
             if (Editors.Count == 0) return;
             Editor cEditor = Editors[_currentEditorIndex];
-            if (prevWindowWidth != Console.WindowWidth || fullRedraw)
+            if (_prevWindowWidth != Console.WindowWidth || fullRedraw)
             {
                 Console.SetCursorPosition(0, Console.WindowHeight - 2);
                 for (int i = 0; i < Console.WindowWidth; i++)
@@ -178,6 +177,8 @@ namespace ConsoleCodeEditor.Component
                 _responsiveGUI.Start();
             }
             _runtime.Start();
+
+            // _lowLevelKeyHook.Hook();
         }
 
         public void Draw()
@@ -192,6 +193,7 @@ namespace ConsoleCodeEditor.Component
         {
             _keepResponsiveGUIAlive = false;
             _keepRuntimeAlive = false;
+            _lowLevelKeyHook.Stop();
             _runtime.Join();
             _runtime.Abort(); // Is probably unecessary
             _responsiveGUI.Join();
@@ -218,12 +220,12 @@ namespace ConsoleCodeEditor.Component
         }
         public bool UpdateGUI()
         {
-            if (prevWindowWidth != Console.WindowWidth || prevWindowHeight != Console.WindowHeight )
+            if (_prevWindowWidth != Console.WindowWidth || _prevWindowHeight != Console.WindowHeight )
             {
                 Draw();
                 Editors[_currentEditorIndex].DrawAllLines();
-                prevWindowWidth = Console.WindowWidth;
-                prevWindowHeight = Console.WindowHeight;
+                _prevWindowWidth = Console.WindowWidth;
+                _prevWindowHeight = Console.WindowHeight;
                 if (Settings.ResponsiveGUI)
                 {
                     Console.BufferWidth = Console.WindowWidth + 3;

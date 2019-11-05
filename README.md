@@ -44,16 +44,20 @@ Take me to the [installation](#installation) :arrow_right:
 The editor has many features including real-time syntax highlighting and keyboard shortcuts.
 Here is a list of all keyboard shortcuts.
 
-| Keystrokes                                                   | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| <kbd>:arrow_left:</kbd><kbd>:arrow_up:</kbd><kbd>:arrow_down:</kbd><kbd>:arrow_right:</kbd> | Move around in the document.                                 |
-| <kbd>CTRL</kbd>+<kbd>:arrow_left:</kbd>                      | Move to the leftmost position on the current line.           |
-| <kbd>CTRL</kbd>+<kbd>:arrow_right:</kbd>                     | Move to the rightmost position on the current line.          |
-| <kbd>ALT</kbd>+<kbd>0</kbd>,<kbd>1</kbd>,<kbd>2</kbd>,... or <kbd>9</kbd> | Switch between open tabs.                                    |
-| <kbd>CTRL</kbd>+<kbd>N</kbd>                                 | New untitled file.                                           |
-| <kbd>CTRL</kbd>+<kbd>O</kbd>                                 | Open new file.                                               |
-| <kbd>CTRL</kbd>+<kbd>L</kbd>                                 | Save current file. <em><a href="https://stackoverflow.com/questions/39476157/detect-ctrl-s-in-console" target="_blank">(Reason)</a></em> |
-| <kbd>ESC</kbd>                                               | Close the program **if all files are saved**.                |
+| Keystrokes                                                   | Description                                         |
+| ------------------------------------------------------------ | --------------------------------------------------- |
+| <kbd>:arrow_left:</kbd><kbd>:arrow_up:</kbd><kbd>:arrow_down:</kbd><kbd>:arrow_right:</kbd> | Move around in the document.                        |
+| <kbd>CTRL</kbd>+<kbd>:arrow_left:</kbd>                      | Move to the leftmost position on the current line.  |
+| <kbd>CTRL</kbd>+<kbd>:arrow_right:</kbd>                     | Move to the rightmost position on the current line. |
+| <kbd>ALT</kbd>+<kbd>0</kbd>,<kbd>1</kbd>,<kbd>2</kbd>,... or <kbd>9</kbd> | Switch between open tabs.                           |
+| <kbd>CTRL</kbd>+<kbd>N</kbd>                                 | New untitled file.                                  |
+| <kbd>CTRL</kbd>+<kbd>O</kbd>                                 | Open new file.                                      |
+| <kbd>CTRL</kbd>+<kbd>S</kbd>                                 | Save current file.                                  |
+| <kbd>CTRL</kbd>+<kbd>C</kbd>                                 | Copy to clipboard.                                  |
+| <kbd>CTRL</kbd>+<kbd>V</kbd>                                 | Paste from clipboard.                               |
+| <kbd>CTRL</kbd>+<kbd>Z</kbd>                                 | Undo.                                               |
+| <kbd>CTRL</kbd>+<kbd>Y</kbd>                                 | Redo.                                               |
+| <kbd>ESC</kbd>                                               | Close the program **if all files are saved**.       |
 
 ## Installation
 

@@ -186,209 +186,225 @@ namespace ConsoleCodeEditor.Component
             {
                 // Cursor is on the current line
                 Console.CursorLeft = LinesLength + 2 + CursorLeft;
-                Console.ForegroundColor = Settings.DefaultForeground;
                 ConsoleKeyInfo key = Console.ReadKey();
 
-                if (key.Key == 0) return; // This causes an fun bug (CTRL+M)
+                ProcessKey(this, index, key);
+            }
+        }
 
-                if (key.Modifiers == ConsoleModifiers.Control)
+        public void ProcessKey(object sender, ConsoleKeyInfo key) => ProcessKey(sender, CursorTop, key);
+        public void ProcessKey(object sender, int index, ConsoleKeyInfo key)
+        {
+            if (key.Key == 0) return; // This causes an fun bug (CTRL+M)
+            if (key.Modifiers == ConsoleModifiers.Control)
+            {
+                // Weird character to hide
+                Console.CursorLeft -= 1;
+                Console.Write(" ");
+
+                switch (key.Key)
                 {
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.L:
-                            SaveToFile();
-                            FileIsSaved = true;
-                            return;
-                        case ConsoleKey.Backspace:
-                            // Remove all spaces
-                            contentBuffer[index] = contentBuffer[index].TrimEnd();
-                            CursorLeft = contentBuffer[index].Length;
-                            return;
-                        case ConsoleKey.O:
-                            OpenFileDialog openFile = new OpenFileDialog();
-                            if (openFile.ShowDialog() == DialogResult.OK)
-                            {
-                                Parent.OpenFileEditor(openFile.FileName);
-                                Parent.SetCurrentEditor(Parent.Editors.Count - 1);
-                                Parent.DrawTabs();
-                            }
-                            return;
-                        case ConsoleKey.N:
-                            // SOMETHING IS VERY WRONG HERE
-                            Parent.NewFileEditor();
-                            // Switch to that editor
+                    case ConsoleKey.S:
+                        SaveToFile();
+                        FileIsSaved = true;
+                        return;
+                    case ConsoleKey.Backspace:
+                        // Remove all spaces
+                        contentBuffer[index] = contentBuffer[index].TrimEnd();
+                        CursorLeft = contentBuffer[index].Length;
+                        return;
+                    case ConsoleKey.O:
+                        OpenFileDialog openFile = new OpenFileDialog();
+                        if (openFile.ShowDialog() == DialogResult.OK)
+                        {
+                            Parent.OpenFileEditor(openFile.FileName);
                             Parent.SetCurrentEditor(Parent.Editors.Count - 1);
-                            return;
-                        case ConsoleKey.R:
-                            // Run file
+                            Parent.DrawTabs();
+                        }
+                        return;
+                    case ConsoleKey.N:
+                        // SOMETHING IS VERY WRONG HERE
+                        Parent.NewFileEditor();
+                        // Switch to that editor
+                        Parent.SetCurrentEditor(Parent.Editors.Count - 1);
+                        return;
+                    case ConsoleKey.R:
+                        // Run file
 
-                            return;
-                        case ConsoleKey.RightArrow:
-                            if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
-                            {
-                                CursorTop++;
-                                CursorLeft = 0;
-                            }
-                            else CursorLeft = contentBuffer[index].Length;
-                            return;
-                        case ConsoleKey.LeftArrow:
-                            if (CursorLeft == 0 && CursorTop > 0)
-                            {
-                                CursorTop--;
-                                CursorLeft = contentBuffer[index - 1].Length;
-                                DrawLine(index); // Draw the "previous" line
-                            }
-                            else CursorLeft = 0;
-                            return;
-                    }
-                    return;
-                }
-                else if (key.Modifiers == ConsoleModifiers.Alt)
-                {
-                    // Change Tab
-                    try
-                    {
-                        int tabIndex = int.Parse(key.KeyChar.ToString());
-                        Program.ParentWindow.SetCurrentEditor(tabIndex);
-                    }
-                    catch { }
-                    return;
-                }
+                        return;
+                    case ConsoleKey.Z:
+                        // Undo
 
-                if (key.Key == ConsoleKey.Enter)
+                        return;
+                    case ConsoleKey.Y:
+                        // Redo
+
+                        return;
+                    case ConsoleKey.RightArrow:
+                        if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
+                        {
+                            CursorTop++;
+                            CursorLeft = 0;
+                        }
+                        else CursorLeft = contentBuffer[index].Length;
+                        return;
+                    case ConsoleKey.LeftArrow:
+                        if (CursorLeft == 0 && CursorTop > 0)
+                        {
+                            CursorTop--;
+                            CursorLeft = contentBuffer[index - 1].Length;
+                            DrawLine(index); // Draw the "previous" line
+                        }
+                        else CursorLeft = 0;
+                        return;
+                }
+                return;
+            }
+            else if (key.Modifiers == ConsoleModifiers.Alt)
+            {
+                // Change Tab
+                try
                 {
-                    int prevLineIndexLen = LinesLength;
-                    FileIsSaved = false;
-                    string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
-                    contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
-                    bool autoIndent = LanguageSyntax.IndentNextLine(contentBuffer[index]);
-                    contentBuffer.Insert(CursorTop + 1, (autoIndent ? Settings.Indents : "") + leftHandSide);
+                    int tabIndex = int.Parse(key.KeyChar.ToString());
+                    Program.ParentWindow.SetCurrentEditor(tabIndex);
+                }
+                catch { }
+                return;
+            }
+
+            if (key.Key == ConsoleKey.Enter)
+            {
+                int prevLineIndexLen = LinesLength;
+                FileIsSaved = false;
+                string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
+                contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
+                bool autoIndent = LanguageSyntax.IndentNextLine(contentBuffer[index]);
+                contentBuffer.Insert(CursorTop + 1, (autoIndent ? Settings.Indents : "") + leftHandSide);
+                CursorTop++;
+                if (autoIndent) CursorLeft = Settings.Indents.Length;
+                else CursorLeft = 0;
+                if (prevLineIndexLen != LinesLength)
+                {
+                    Parent.DrawTabs();
+                    DrawAllLines();
+                }
+                else DrawAllLines(CursorTop - 1);
+                return;
+            }
+            if (key.Key == ConsoleKey.UpArrow)
+            {
+                if (CursorTop > 0)
+                {
+                    if (CursorLeft > contentBuffer[index - 1].Length) CursorLeft = contentBuffer[index - 1].Length;
+                    CursorTop--;
+                    DrawLine(index); // Draw the previous line
+                }
+                return;
+            }
+            if (key.Key == ConsoleKey.DownArrow)
+            {
+                if (CursorTop < contentBuffer.Count - 1)
+                {
+                    if (CursorLeft > contentBuffer[index + 1].Length) CursorLeft = contentBuffer[index + 1].Length;
                     CursorTop++;
-                    if (autoIndent) CursorLeft = Settings.Indents.Length;
-                    else CursorLeft = 0;
-                    if (prevLineIndexLen != LinesLength)
-                    {
-                        Parent.DrawTabs();
-                        DrawAllLines();
-                    }
-                    else DrawAllLines(CursorTop - 1);
-                    return;
+                    DrawLine(index); // Draw the previous line
                 }
-                if (key.Key == ConsoleKey.UpArrow)
+                return;
+            }
+            if (key.Key == ConsoleKey.LeftArrow)
+            {
+                if (CursorLeft > 0) CursorLeft -= 1;
+                else if (CursorTop > 0 && CursorLeft == 0)
                 {
-                    if (CursorTop > 0)
-                    {
-                        if (CursorLeft > contentBuffer[index - 1].Length) CursorLeft = contentBuffer[index - 1].Length;
-                        CursorTop--;
-                        DrawLine(index); // Draw the previous line
-                    }
-                    return;
+                    CursorTop--;
+                    CursorLeft = contentBuffer[index - 1].Length;
+                    DrawLine(index); // Draw the previous line
                 }
-                if (key.Key == ConsoleKey.DownArrow)
+                return;
+            }
+            if (key.Key == ConsoleKey.RightArrow)
+            {
+                if (CursorLeft < contentBuffer[index].Length) CursorLeft += 1;
+                else if (CursorTop + 1 < contentBuffer.Count)
                 {
-                    if (CursorTop < contentBuffer.Count - 1)
-                    {
-                        if (CursorLeft > contentBuffer[index + 1].Length) CursorLeft = contentBuffer[index + 1].Length;
-                        CursorTop++;
-                        DrawLine(index); // Draw the previous line
-                    }
-                    return;
+                    CursorTop++;
+                    CursorLeft = 0;
                 }
-                if (key.Key == ConsoleKey.LeftArrow)
-                {
-                    if (CursorLeft > 0) CursorLeft -= 1;
-                    else if (CursorTop > 0 && CursorLeft == 0)
-                    {
-                        CursorTop--;
-                        CursorLeft = contentBuffer[index - 1].Length;
-                        DrawLine(index); // Draw the previous line
-                    }
-                    return;
-                }
-                if (key.Key == ConsoleKey.RightArrow)
-                {
-                    if (CursorLeft < contentBuffer[index].Length) CursorLeft += 1;
-                    else if (CursorTop + 1 < contentBuffer.Count)
-                    {
-                        CursorTop++;
-                        CursorLeft = 0;
-                    }
-                    return;
-                }
-                if (key.Key == ConsoleKey.Backspace)
-                {
-                    FileIsSaved = false;
-                    if (CursorLeft == 0 && CursorTop > 0)
-                    {
-                        int prevLinesLength = LinesLength;
-                        int lastLineLen = contentBuffer[contentBuffer.Count - 1].Length;
-                        CursorLeft = contentBuffer[index - 1].Length;
-                        contentBuffer[index - 1] = contentBuffer[index - 1] + contentBuffer[index];
-                        contentBuffer.RemoveAt(index);
-                        CursorTop--;
-                        Parent.DrawTabs();
-                        if (prevLinesLength == LinesLength) DrawAllLines(CursorTop);
-                        else DrawAllLines();
-                        // Clear the previous line in chunks at the time
-                        ClearLine(contentBuffer.Count, contentBuffer[index - 1].Length);
-                        return;
-                    }
-                    if (contentBuffer[index].Length == 0 && CursorTop > 0)
-                    {
-                        contentBuffer.RemoveAt(index);
-                        CursorTop--;
-                        Parent.Draw();
-                        DrawAllLines();
-                        return;
-                    }
-                    if (CursorLeft > 0) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
-                    if (CursorLeft > 0) CursorLeft--;
-                    return;
-                }
-                if (key.Key == ConsoleKey.Delete)
+                return;
+            }
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                FileIsSaved = false;
+                if (CursorLeft == 0 && CursorTop > 0)
                 {
                     int prevLinesLength = LinesLength;
-                    FileIsSaved = false;
-                    if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
-                    {
-                        contentBuffer[index] = contentBuffer[index] + contentBuffer[index + 1];
-                        contentBuffer.RemoveAt(index + 1);
-                        if (prevLinesLength != LinesLength)
-                        {
-                            Parent.DrawTabs();
-                            DrawAllLines();
-                        }
-                        else DrawAllLines(CursorTop);
-                        ClearLine(contentBuffer.Count, contentBuffer[index].Length);
-                        return;
-                    }
-                    if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
+                    int lastLineLen = contentBuffer[contentBuffer.Count - 1].Length;
+                    CursorLeft = contentBuffer[index - 1].Length;
+                    contentBuffer[index - 1] = contentBuffer[index - 1] + contentBuffer[index];
+                    contentBuffer.RemoveAt(index);
+                    CursorTop--;
+                    Parent.DrawTabs();
+                    if (prevLinesLength == LinesLength) DrawAllLines(CursorTop);
+                    else DrawAllLines();
+                    // Clear the previous line in chunks at the time
+                    ClearLine(contentBuffer.Count, contentBuffer[index - 1].Length);
                     return;
                 }
-                if (key.Key == ConsoleKey.Tab)
+                if (contentBuffer[index].Length == 0 && CursorTop > 0)
                 {
-                    FileIsSaved = false;
-                    contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.Indents);
-                    CursorLeft += Settings.Indents.Length;
+                    contentBuffer.RemoveAt(index);
+                    CursorTop--;
+                    Parent.Draw();
+                    DrawAllLines();
                     return;
                 }
-                if (key.Key == ConsoleKey.Escape)
-                {
-                    if (Parent.allEditorsSaved())
-                    {
-                        Environment.Exit(0);
-                    }
-                    else
-                    {
-                        // Make sure to save all editors first
-                    }
-                    return;
-                }
-
-                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
-                CursorLeft++;
-                FileIsSaved = false;
+                if (CursorLeft > 0) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
+                if (CursorLeft > 0) CursorLeft--;
+                return;
             }
+            if (key.Key == ConsoleKey.Delete)
+            {
+                int prevLinesLength = LinesLength;
+                FileIsSaved = false;
+                if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
+                {
+                    contentBuffer[index] = contentBuffer[index] + contentBuffer[index + 1];
+                    contentBuffer.RemoveAt(index + 1);
+                    if (prevLinesLength != LinesLength)
+                    {
+                        Parent.DrawTabs();
+                        DrawAllLines();
+                    }
+                    else DrawAllLines(CursorTop);
+                    ClearLine(contentBuffer.Count, contentBuffer[index].Length);
+                    return;
+                }
+                if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
+                return;
+            }
+            if (key.Key == ConsoleKey.Tab)
+            {
+                FileIsSaved = false;
+                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.Indents);
+                CursorLeft += Settings.Indents.Length;
+                return;
+            }
+            if (key.Key == ConsoleKey.Escape)
+            {
+                if (Parent.allEditorsSaved())
+                {
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    // Make sure to save all editors first
+                }
+                return;
+            }
+
+            contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
+            CursorLeft++;
+            FileIsSaved = false;
         }
 
         public void Start()

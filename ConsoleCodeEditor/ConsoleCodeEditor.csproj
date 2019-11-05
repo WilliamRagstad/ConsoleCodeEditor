@@ -55,6 +55,7 @@
     <Compile Include="Components\Form Controls\BaseControl.cs" />
     <Compile Include="Components\Form Controls\Text.cs" />
     <Compile Include="Components\FormsWindow.cs" />
+    <Compile Include="KeyHook\KeyHook.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Advanced Note.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Java.cs" />
@@ -72,9 +73,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hooks\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
