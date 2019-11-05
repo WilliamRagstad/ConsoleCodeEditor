@@ -78,7 +78,7 @@ namespace ConsoleCodeEditor
                 ConsoleInputModes.ENABLE_MOUSE_INPUT  |
                 ConsoleInputModes.ENABLE_EXTENDED_FLAGS
             ));
-            Console.TreatControlCAsInput = true;
+            //Console.TreatControlCAsInput = true;
 
             // Start editor
             ParentWindow.Start();
