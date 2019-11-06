@@ -115,8 +115,8 @@ namespace ConsoleCodeEditor.Component
                 case "java": return SyntaxHighlighting.Languages.Java.Instance;
                 case "class": return SyntaxHighlighting.Languages.Java.Instance;/*
                 case "js": return SyntaxHighlighting.Languages.JavaScript.Instance;
-                case "json": return SyntaxHighlighting.Languages.JSON.Instance;
-                case "kiw": return SyntaxHighlighting.Languages.KiwiShell.Instance;
+                case "json": return SyntaxHighlighting.Languages.JSON.Instance;*/
+                case "kiw": return SyntaxHighlighting.Languages.KiwiShell.Instance;/*
                 case "less": return SyntaxHighlighting.Languages.Less.Instance;
                 case "lisp": return SyntaxHighlighting.Languages.Lisp.Instance;
                 case "md": return SyntaxHighlighting.Languages.MarkDown.Instance;

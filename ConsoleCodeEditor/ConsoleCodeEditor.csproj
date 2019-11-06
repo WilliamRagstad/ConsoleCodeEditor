@@ -58,6 +58,7 @@
     <Compile Include="KeyHook\KeyHook.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Advanced Note.cs" />
+    <Compile Include="SyntaxHighlighting\Languages\KiwiShell.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Java.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Python.cs" />
     <Compile Include="SyntaxHighlighting\Languages\C.cs" />
