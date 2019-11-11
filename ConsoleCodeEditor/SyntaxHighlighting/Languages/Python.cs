@@ -19,13 +19,11 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             //RegexRules.Add(@"int|float|char|short|long|double|decimal|signed|unsigned", Color.DarkViolet);
 
             // true / false
-            RegexRules.Add(@"true|false", Color.Azure);
+            RegexRules.Add(@"True|False", Color.Magenta);
 
             // Statements
-            RegexRules.Add(@"def|return|break|continue", Color.YellowGreen);
-            RegexRules.Add(@"(do)(?:[\x20\t]*)(?={)", Color.Yellow);
-            RegexRules.Add(@"(case)(?:.*)(?=:)", Color.Yellow);
-            RegexRules.Add(@"\W(if|else|while|for|switch|in|not)", Color.Yellow);
+            RegexRules.Add(@"return|break|continue|global", Color.Orange);
+            RegexRules.Add(@"if|else|while|for|switch|in|not|case|def", Color.Yellow);
 
             // Functions
             RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
@@ -44,5 +42,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         }
 
         public override bool IndentNextLine(string currentLine) => currentLine.EndsWith(":");
+
+        public override bool IsExecutable() => true;
+
+        public override string ExecutionArguments(string filepath) => $"python {filepath}";
     }
 }

@@ -37,6 +37,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
             // Loops
             RegexRules.Add(@":\w+(\[.*\])?", Color.RoyalBlue);
+            RegexRules.Add(@"(?::)\w+(?=\[.*\])", Color.AliceBlue);
 
             // variables
             RegexRules.Add(@"%\w+%", Color.PeachPuff);
@@ -45,6 +46,10 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add("//.*", Color.DarkGray);
         }
 
-        public override bool IndentNextLine(string currentLine) => currentLine.EndsWith("{");
+        public override bool IndentNextLine(string currentLine) => false;
+
+        public override bool IsExecutable() => false;
+
+        public override string ExecutionArguments(string filepath) => "";
     }
 }

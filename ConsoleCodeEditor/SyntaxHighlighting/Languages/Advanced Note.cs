@@ -42,5 +42,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public override bool IndentNextLine(string currentLine) =>
             currentLine.Trim().StartsWith(">>") ||
             (currentLine.Trim().StartsWith("--") && currentLine.Trim().EndsWith("--"));
+
+        public override bool IsExecutable() => false;
+
+        public override string ExecutionArguments(string filepath) => "";
     }
 }

@@ -230,7 +230,16 @@ namespace ConsoleCodeEditor.Component
                         return;
                     case ConsoleKey.R:
                         // Run file
+                        if (LanguageSyntax.IsExecutable())
+                        {
+                            if (!FileIsSaved) SaveToFile();
+                            FileInfo file = new FileInfo(Filepath);
+                            Executor executor = new Executor(LanguageSyntax.ExecutionArguments(Filepath), Filename, file.Directory.FullName);
+                            executor.Start();
 
+                            Parent.Draw();
+                            DrawAllLines();
+                        }
                         return;
                     case ConsoleKey.Z:
                         // Undo

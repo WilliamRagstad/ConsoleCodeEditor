@@ -12,5 +12,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public PlainText() { DisplayName = "Plain Text";  }
 
         public override bool IndentNextLine(string currentLine) => false;
+
+        public override bool IsExecutable() => false;
+
+        public override string ExecutionArguments(string filepath) => "";
     }
 }

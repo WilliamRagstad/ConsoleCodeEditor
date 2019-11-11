@@ -45,5 +45,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         }
 
         public override bool IndentNextLine(string currentLine) => currentLine.EndsWith("{");
+
+        public override bool IsExecutable() => false;
+
+        public override string ExecutionArguments(string filepath) => "";
     }
 }

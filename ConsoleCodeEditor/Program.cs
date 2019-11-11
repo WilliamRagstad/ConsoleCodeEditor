@@ -24,6 +24,7 @@ namespace ConsoleCodeEditor
 
             //args = new string[0];
             //args = new[] { "/open" };
+            args = new[] { "/open", @"C:\Users\ewr0327\Desktop\myTestProg.py" };
             //args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
             //args = new[] { "exampleFile.c", "exampleFile2.py", "/help", "open" };
             Arguments arguments = Arguments.Parse(args);

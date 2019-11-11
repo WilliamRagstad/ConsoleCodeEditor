@@ -18,5 +18,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         }
 
         public override bool IndentNextLine(string currentLine) => C.Instance.IndentNextLine(currentLine);
+
+        public override bool IsExecutable() => false;
+
+        public override string ExecutionArguments(string filepath) => "";
     }
 }

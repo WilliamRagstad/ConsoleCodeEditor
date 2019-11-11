@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Components\EditorWindow.cs" />
+    <Compile Include="Components\ExecutionWindow.cs" />
     <Compile Include="Components\Form Controls\BaseControl.cs" />
     <Compile Include="Components\Form Controls\Text.cs" />
     <Compile Include="Components\FormsWindow.cs" />

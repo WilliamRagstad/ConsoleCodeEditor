@@ -35,6 +35,11 @@ namespace ConsoleCodeEditor
 
         public static Color DockCurrentLanguage_Foreground = Color.DarkViolet;
 
+        public static Color ExecutorMain_Foreground = Color.Yellow;
+        public static Color ExecutorStats_Foreground = Color.Lime;
+        public static Color ExecutorStatsValue_Foreground = Color.Yellow;
+        public static ConsoleColor ExecutorError_Foreground = ConsoleColor.Magenta;
+
         #endregion
 
         #region Skin
