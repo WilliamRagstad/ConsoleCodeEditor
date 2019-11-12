@@ -22,8 +22,8 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"True|False", Color.Magenta);
 
             // Statements
-            RegexRules.Add(@"return|break|continue|global", Color.Orange);
-            RegexRules.Add(@"if|else|while|for|switch|in|not|case|def", Color.Yellow);
+            RegexRules.Add(@"return|break|continue|global|import", Color.Orange);
+            RegexRules.Add(@"(if|else|while|for|switch|in|is|not|case|def)(?=[\x20\:]+)", Color.Yellow);
 
             // Functions
             RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);

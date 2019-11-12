@@ -402,6 +402,7 @@ namespace ConsoleCodeEditor.Component
             {
                 if (Parent.allEditorsSaved())
                 {
+                    Console.Clear();
                     Environment.Exit(0);
                 }
                 else

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System;
 using Console = Colorful.Console;
+using System.IO;
 
 namespace ConsoleCodeEditor.Component
 {
@@ -61,12 +62,20 @@ namespace ConsoleCodeEditor.Component
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.CreateNoWindow = true;
+
             // Start statistical meassures
             Stopwatch sw = new Stopwatch();
             sw.Start();
             p.Start();
+            StreamWriter input = p.StandardInput;
+
+            p.WaitForExit();
             sw.Stop();
+
+
+
 
             string output = p.StandardOutput.ReadToEnd();
             string error  = p.StandardError.ReadToEnd();
@@ -74,7 +83,6 @@ namespace ConsoleCodeEditor.Component
             Console.ForegroundColor = Settings.DefaultForeground;
             Console.WriteLine(output);
 
-            p.WaitForExit();
             if (!string.IsNullOrEmpty(error))
             {
                 DrawTitlebar(" Errors ");

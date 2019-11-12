@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -24,7 +25,7 @@ namespace ConsoleCodeEditor
 
             //args = new string[0];
             //args = new[] { "/open" };
-            args = new[] { "/open", @"C:\Users\ewr0327\Desktop\myTestProg.py" };
+            //args = new[] { "/open", @"C:\Users\ewr0327\Desktop\myTestProg.py" };
             //args = new[] { "/open", "exampleFile.c", "exampleFile2.py" };
             //args = new[] { "exampleFile.c", "exampleFile2.py", "/help", "open" };
             Arguments arguments = Arguments.Parse(args);
@@ -68,7 +69,9 @@ namespace ConsoleCodeEditor
                 {
                     for (int i = 0; i < arguments.KeylessArguments.Count; i++)
                     {
-                        ParentWindow.OpenFileEditor(arguments[i]);
+                        string filename = Component.ParentWindow.ParseFileName(arguments[i]);
+                        if (File.Exists(arguments[i])) ParentWindow.OpenFileEditor(arguments[i]);
+                        else ParentWindow.NewFileEditor(filename, arguments[i], Component.Editor.DetectLanguageSyntax(filename));
                     }
                 }
             }

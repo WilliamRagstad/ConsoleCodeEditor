@@ -37,6 +37,12 @@ Take me to the [installation](#installation) :arrow_right:
             Drag and drop multiple files to open them as tabs in CCE!
         </p>
     </div>
+    <div>
+        <img alt="Preview GIF" src="execute_file.gif" width="75%">
+        <p>
+            Execute your code directly inside the editor!
+        </p>
+    </div>
 </div>
 
 ## Usage
