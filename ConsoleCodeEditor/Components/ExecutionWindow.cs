@@ -60,35 +60,35 @@ namespace ConsoleCodeEditor.Component
 
             // Redirect the output stream of the child process.
             p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.CreateNoWindow = true;
+            //p.StartInfo.RedirectStandardError = true;
+            //p.StartInfo.RedirectStandardOutput = false;
+            //p.StartInfo.RedirectStandardInput = false;
+            //p.StartInfo.CreateNoWindow = true;
 
             // Start statistical meassures
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            p.Start();
-            StreamWriter input = p.StandardInput;
 
+            p.Start();
             p.WaitForExit();
+
             sw.Stop();
 
 
 
 
-            string output = p.StandardOutput.ReadToEnd();
-            string error  = p.StandardError.ReadToEnd();
+            //string output = p.StandardOutput.ReadToEnd();
+            //string error  = p.StandardError.ReadToEnd();
 
-            Console.ForegroundColor = Settings.DefaultForeground;
-            Console.WriteLine(output);
+            //Console.ForegroundColor = Settings.DefaultForeground;
+            //Console.WriteLine(output);
 
-            if (!string.IsNullOrEmpty(error))
+            /*if (!string.IsNullOrEmpty(error))
             {
                 DrawTitlebar(" Errors ");
                 System.Console.ForegroundColor = Settings.ExecutorError_Foreground;
                 Console.WriteLine(error);
-            }
+            }*/
 
             DrawTitlebar(" Statistics ", false);
 
