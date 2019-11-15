@@ -89,6 +89,10 @@ namespace ConsoleCodeEditor.Component
                         DrawAllLines();
                     }
                 }
+                else
+                {
+                    _fileIsSaved = false;
+                }
             }
         }
         private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
@@ -233,6 +237,7 @@ namespace ConsoleCodeEditor.Component
                         if (LanguageSyntax.IsExecutable())
                         {
                             if (!FileIsSaved) SaveToFile();
+                            FileIsSaved = true;
                             FileInfo file = new FileInfo(Filepath);
                             Executor executor = new Executor(LanguageSyntax.ExecutionArguments(Filepath), Filename, file.Directory.FullName);
                             executor.Start();
@@ -408,6 +413,23 @@ namespace ConsoleCodeEditor.Component
                 else
                 {
                     // Make sure to save all editors first
+                    if (MessageBox.Show("Some files are not saved. Do you wish to exit?", "Exit without saving?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        return;
+                    }
+                    foreach (Editor e in Parent.Editors)
+                    {
+                        if (!e._fileIsSaved)
+                        {
+                            if (MessageBox.Show("Do you want to discard all changes to " + Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            {
+                                // Save file
+                                e.SaveToFile();
+                            }
+                        }
+                    }
+                    Console.Clear();
+                    Environment.Exit(0);
                 }
                 return;
             }

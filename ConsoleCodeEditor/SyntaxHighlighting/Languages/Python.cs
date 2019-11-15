@@ -13,7 +13,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         {
             DisplayName = "Python";
             // Variable names
-            RegexRules.Add(@"(\w)+", Color.Lime);
+            RegexRules.Add(@"(\w)+", Color.SpringGreen);
 
             // Primitive Data Types
             //RegexRules.Add(@"int|float|char|short|long|double|decimal|signed|unsigned", Color.DarkViolet);
@@ -26,7 +26,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"(if|else|elif|while|for|switch|in|is|not|case|def)(?=[\x20\:]+)", Color.Yellow);
 
             // Functions
-            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
+            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.Fuchsia);
 
             // Operators
             RegexRules.Add(@"\+|-|\*|\/|%|;|=", Color.Aqua);

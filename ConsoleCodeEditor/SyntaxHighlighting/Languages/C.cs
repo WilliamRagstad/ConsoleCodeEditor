@@ -13,19 +13,19 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         {
             DisplayName = "C";
             // Variable names
-            RegexRules.Add(@"(\w)+", Color.Lime);
+            RegexRules.Add(@"(\w)+", Color.SpringGreen);
 
             // Primitive Data Types
-            RegexRules.Add(@"int|float|char|short|long|double|decimal|signed|unsigned|void", Color.DarkViolet);
+            RegexRules.Add(@"int|intptr_t|float|char|short|long|double|decimal|signed|unsigned|void", Color.DarkViolet);
 
             // true / false
             RegexRules.Add(@"true|false", Color.Azure);
 
             // Functions
-            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.RosyBrown);
+            RegexRules.Add(@"(\w+)[\x20\t]*(?=\()", Color.Fuchsia);
 
             // Statements
-            RegexRules.Add(@"return|break|continue", Color.YellowGreen);
+            RegexRules.Add(@"return|break|continue", Color.Yellow);
             RegexRules.Add(@"(do)(?:[\x20\t]*)(?={)", Color.Yellow);
             RegexRules.Add(@"(case)(?:.*)(?=:)", Color.Yellow);
             RegexRules.Add(@"(if|else|while|for|switch)(?:[\x20\t]*)(?=\()", Color.Yellow);
@@ -34,6 +34,11 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"\+|-|\*|\/|%|;|=", Color.Aqua);
             RegexRules.Add(@"<|>|&&|\|\||!|<=|>=", Color.DarkGray);
             RegexRules.Add(@"\[|\]|\(|\)|{|}", Color.Brown);
+
+
+            // #            (#[a-z]+)([\x20\t]+("|<)[\w.\\]+("|>))?
+            RegexRules.Add("(#[a-z]+)([\\x20\\t]+<[\\w.\\\\]+>)?", Color.DarkOrange);
+            RegexRules.Add("(#[a-z]+)", Color.Yellow);
 
             RegexRules.Add(@"-?(?![^\w])\d+x[\dA-F]+|-?(?![^\w])[\d.]+[fd]?", Color.Orange); // Numbers (f,d suffix) (0x0)
             RegexRules.Add("\"([^\"])*\"", Color.Green); // Strings
@@ -46,8 +51,8 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
         public override bool IndentNextLine(string currentLine) => currentLine.EndsWith("{");
 
-        public override bool IsExecutable() => false;
+        public override bool IsExecutable() => true;
 
-        public override string ExecutionArguments(string filepath) => "";
+        public override string ExecutionArguments(string filepath) => $"gcc {filepath} && a.exe && del a.exe";
     }
 }

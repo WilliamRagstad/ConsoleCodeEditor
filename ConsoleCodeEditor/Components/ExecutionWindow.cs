@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
 using System;
 using Console = Colorful.Console;
-using System.IO;
 
 namespace ConsoleCodeEditor.Component
 {
@@ -26,46 +24,34 @@ namespace ConsoleCodeEditor.Component
         public string Shellcommand { get; }
         public string Filename { get; }
         public string Filedirectory { get; }
-        private void DrawTitlebar(string title, bool newLine = true)
+        private void DrawTitlebar(string title)
         {
             Console.ForegroundColor = Settings.TabForeground;
             int width = Console.WindowWidth;
-            int j = 0;
-            for (int i = 0; i < width; i++)
+            string bar = "";
+            for (int i = 0; i < width / 2 - title.Length / 2; i++)
             {
-                if (i > width / 2 - title.Length / 2 - 2 && i < width / 2 + title.Length / 2)
-                {
-                    if (i == width / 2 - title.Length / 2 - 2 + 1)  Console.ForegroundColor = Settings.ExecutorMain_Foreground;
-                    if (i == width / 2 + title.Length / 2 - 1)      Console.ForegroundColor = Settings.TabForeground;
-                    if (j < title.Length)
-                    {
-                        Console.Write(title[j]);
-                        j++;
-                        continue;
-                    }
-                }
-                Console.Write("=");
+                bar += "=";
             }
-            if (newLine) Console.Write("\n");
+            Console.ForegroundColor = Settings.TabForeground;
+            Console.Write(bar);
+            Console.ForegroundColor = Settings.ExecutorMain_Foreground;
+            Console.Write(title);
+            Console.ForegroundColor = Settings.TabForeground;
+            Console.WriteLine(bar);
+
             Console.ForegroundColor = Settings.DefaultForeground;
         }
         public void Start()
         {
             Console.Clear();
-            DrawTitlebar($" Executing {Filename} ", false);
-
+            DrawTitlebar($" Executing {Filename} ");
             // Start the child process.
             Process p = new Process();
             p.StartInfo = new ProcessStartInfo(@"C:\Windows\System32\cmd.exe", "/c " + Shellcommand);
 
-            // Redirect the output stream of the child process.
             p.StartInfo.UseShellExecute = false;
-            //p.StartInfo.RedirectStandardError = true;
-            //p.StartInfo.RedirectStandardOutput = false;
-            //p.StartInfo.RedirectStandardInput = false;
-            //p.StartInfo.CreateNoWindow = true;
-
-            // Start statistical meassures
+            p.StartInfo.WorkingDirectory = Filedirectory;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -74,23 +60,8 @@ namespace ConsoleCodeEditor.Component
 
             sw.Stop();
 
-
-
-
-            //string output = p.StandardOutput.ReadToEnd();
-            //string error  = p.StandardError.ReadToEnd();
-
-            //Console.ForegroundColor = Settings.DefaultForeground;
-            //Console.WriteLine(output);
-
-            /*if (!string.IsNullOrEmpty(error))
-            {
-                DrawTitlebar(" Errors ");
-                System.Console.ForegroundColor = Settings.ExecutorError_Foreground;
-                Console.WriteLine(error);
-            }*/
-
-            DrawTitlebar(" Statistics ", false);
+            Console.Write(Environment.NewLine);
+            DrawTitlebar(" Statistics ");
 
             DrawStat("Time", sw.Elapsed.ToString() + $" ({sw.ElapsedMilliseconds} ms)");
 
