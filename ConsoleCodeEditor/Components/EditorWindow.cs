@@ -236,8 +236,11 @@ namespace ConsoleCodeEditor.Component
                         // Run file
                         if (LanguageSyntax.IsExecutable())
                         {
-                            if (!FileIsSaved) SaveToFile();
-                            FileIsSaved = true;
+                            if (!FileIsSaved)
+                            {
+                                SaveToFile();
+                                FileIsSaved = true;
+                            }
                             FileInfo file = new FileInfo(Filepath);
                             Executor executor = new Executor(LanguageSyntax.ExecutionArguments(Filepath), Filename, file.Directory.FullName);
                             executor.Start();
@@ -421,7 +424,7 @@ namespace ConsoleCodeEditor.Component
                     {
                         if (!e._fileIsSaved)
                         {
-                            if (MessageBox.Show("Do you want to discard all changes to " + Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                            if (MessageBox.Show("Are you sure about discarding all changes to " + e.Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                             {
                                 // Save file
                                 e.SaveToFile();

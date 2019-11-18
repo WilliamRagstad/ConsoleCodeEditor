@@ -77,14 +77,19 @@ namespace ConsoleCodeEditor
             }
 
             // Setup console
-            SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), (uint)(
-                ConsoleInputModes.ENABLE_WINDOW_INPUT |
-                ConsoleInputModes.ENABLE_MOUSE_INPUT  |
-                ConsoleInputModes.ENABLE_EXTENDED_FLAGS
-            ));
+            SetupConsole();
 
             // Start editor
             ParentWindow.Start();
+        }
+
+        public static void SetupConsole()
+        {
+            SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), (uint)(
+                ConsoleInputModes.ENABLE_WINDOW_INPUT |
+                ConsoleInputModes.ENABLE_MOUSE_INPUT |
+                ConsoleInputModes.ENABLE_EXTENDED_FLAGS
+            ));
         }
 
         #region Low-Level Functions

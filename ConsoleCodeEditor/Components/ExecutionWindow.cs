@@ -68,6 +68,9 @@ namespace ConsoleCodeEditor.Component
             Console.ForegroundColor = Settings.TabForeground;
             Console.Write("\nPress any key to continue...");
             Console.ReadKey(); // Short pause
+
+            // Re-hook global key capture device.
+            Program.SetupConsole();
         }
 
         private void DrawStat(string key, string value)
