@@ -76,6 +76,7 @@ namespace ConsoleCodeEditor.Component
 
         public void SetCurrentEditor(int index)
         {
+            if (index < 0) index += 10; // Keyboard numbers can't exceed 10. (0-9)
             if (index < Editors.Count)
             {
                 _currentEditorIndex = index;

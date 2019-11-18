@@ -282,7 +282,7 @@ namespace ConsoleCodeEditor.Component
                 // Change Tab
                 try
                 {
-                    int tabIndex = int.Parse(key.KeyChar.ToString());
+                    int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
                     Program.ParentWindow.SetCurrentEditor(tabIndex);
                 }
                 catch { }
