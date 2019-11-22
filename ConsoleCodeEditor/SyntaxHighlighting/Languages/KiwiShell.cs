@@ -12,11 +12,8 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public KiwiShell()
         {
             DisplayName = "KiwiShell";
-            // Variable names
-            RegexRules.Add(@"(\w)+", Color.Lime);
-
-            // Rules
-            RegexRules.Add(@"@\w+(?=(\x20\w+))", Color.Orange);
+            PreferredEncoding = Encoding.ASCII;
+            RegexRules = Batch.Instance.RegexRules; // Inherit from Batch
 
             // Primitive Data Types
             RegexRules.Add(@"string|number|bool", Color.DarkViolet);
@@ -32,15 +29,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"<|>|&&|\|\||!|<=|>=", Color.DarkGray);
             RegexRules.Add(@"\[|\]|\(|\)|{|}", Color.Brown);
 
-            RegexRules.Add(@"-?\d+(.\d+)?", Color.Orange); // Numbers (f,d suffix) (0x0)
-            RegexRules.Add("\"([^\"])*\"", Color.Green); // Strings
-
             // Loops
             RegexRules.Add(@":\w+(\[.*\])?", Color.RoyalBlue);
             RegexRules.Add(@"(?::)\w+(?=\[.*\])", Color.AliceBlue);
-
-            // variables
-            RegexRules.Add(@"%\w+%", Color.PeachPuff);
 
             // Comments
             RegexRules.Add("//.*", Color.DarkGray);

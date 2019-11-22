@@ -26,7 +26,7 @@ namespace ConsoleCodeEditor.Component
             Filepath = filepath;
             LanguageSyntax = languageSyntax;
             contentBuffer = new List<string>();
-            FileEncoding = Encoding.UTF8;
+            FileEncoding = languageSyntax.PreferredEncoding;
             FileIsSaved = true;
             CursorLeft = 0;
             CursorTop = 0;
@@ -95,7 +95,10 @@ namespace ConsoleCodeEditor.Component
                 }
             }
         }
-        private List<string> ReadFileContent() => File.ReadAllLines(Filepath, FileEncoding).ToList();
+        private List<string> ReadFileContent(Encoding encoding = null) {
+            if (encoding == null) return File.ReadAllLines(Filepath).ToList();
+            else return File.ReadAllLines(Filepath, encoding).ToList();
+        }
         public int LinesLength => (contentBuffer.Count - 1).ToString().Length;
         public void AddNewLine() => contentBuffer.Add("");
         public static SyntaxHighlighting.LanguageSyntax DetectLanguageSyntax(string filepath) {
@@ -105,8 +108,9 @@ namespace ConsoleCodeEditor.Component
             {
                 case "txt": return SyntaxHighlighting.Languages.PlainText.Instance;
                 case "an": return SyntaxHighlighting.Languages.AdvancedNote.Instance;
-                //case "bat": return SyntaxHighlighting.Languages.Batch.Instance;
-                //case "cmd": return SyntaxHighlighting.Languages.Batch.Instance;
+                case "bat": return SyntaxHighlighting.Languages.Batch.Instance;
+                case "cmd": return SyntaxHighlighting.Languages.Batch.Instance;
+                case "btm": return SyntaxHighlighting.Languages.Batch.Instance;
                 case "c": return SyntaxHighlighting.Languages.C.Instance;
                 case "cpp": return SyntaxHighlighting.Languages.Cpp.Instance;
                 case "cs": return SyntaxHighlighting.Languages.CSharp.Instance;
@@ -282,8 +286,8 @@ namespace ConsoleCodeEditor.Component
                 // Change Tab
                 try
                 {
-                    int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
-                    Program.ParentWindow.SetCurrentEditor(tabIndex);
+                   int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
+                   Program.ParentWindow.SetCurrentEditor(tabIndex);
                 }
                 catch { }
                 return;

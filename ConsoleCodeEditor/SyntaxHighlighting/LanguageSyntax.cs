@@ -13,6 +13,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting
         public abstract bool IndentNextLine(string currentLine);
         public abstract bool IsExecutable();
         public abstract string ExecutionArguments(string filepath);
+        public Encoding PreferredEncoding = Encoding.UTF8;
         public LanguageSyntax()
         {
             DisplayName = "[Unknown]";

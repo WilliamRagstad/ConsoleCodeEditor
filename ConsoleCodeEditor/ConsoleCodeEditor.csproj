@@ -56,9 +56,11 @@
     <Compile Include="Components\Form Controls\BaseControl.cs" />
     <Compile Include="Components\Form Controls\Text.cs" />
     <Compile Include="Components\FormsWindow.cs" />
+    <Compile Include="Components\Util\Viewport.cs" />
     <Compile Include="KeyHook\KeyHook.cs" />
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Advanced Note.cs" />
+    <Compile Include="SyntaxHighlighting\Languages\Batch.cs" />
     <Compile Include="SyntaxHighlighting\Languages\KiwiShell.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Java.cs" />
     <Compile Include="SyntaxHighlighting\Languages\Python.cs" />

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ConsoleCodeEditor.Component.Util;
 using Console = Colorful.Console;
 
 namespace ConsoleCodeEditor.Component
@@ -24,13 +25,15 @@ namespace ConsoleCodeEditor.Component
             Editors = new List<Editor>();
             _currentEditorIndex = 0;
             _runtime = new Thread(_runtimeLoop);
-            _runtime.ApartmentState = ApartmentState.STA;
+            //_runtime.ApartmentState = ApartmentState.STA;
+            _runtime.SetApartmentState(ApartmentState.STA);
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
         }
 
         public List<Editor> Editors;
         public static int TabHeight = 2;
         public static int DockHeight = 2;
+        public static ConsoleViewport Viewport;
         private int _currentEditorIndex;
         private Thread _runtime;
         private Thread _responsiveGUI;
@@ -38,7 +41,6 @@ namespace ConsoleCodeEditor.Component
         private bool _keepResponsiveGUIAlive;
         private static int _prevWindowWidth;
         private static int _prevWindowHeight;
-        private KeyHook _lowLevelKeyHook;
 
         public void OpenFileEditor(string filepath)
         {
@@ -194,7 +196,6 @@ namespace ConsoleCodeEditor.Component
         {
             _keepResponsiveGUIAlive = false;
             _keepRuntimeAlive = false;
-            _lowLevelKeyHook.Stop();
             _runtime.Join();
             _runtime.Abort(); // Is probably unecessary
             _responsiveGUI.Join();
