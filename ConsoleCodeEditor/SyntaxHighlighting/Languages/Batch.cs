@@ -32,6 +32,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"-?\d+(.\d+)?", Color.Orange); // Numbers (f,d suffix) (0x0)
             RegexRules.Add("[\"']([^\"])*[\"']", Color.Green); // Strings
 
+            // Set value
+            RegexRules.Add(@"(?<=set[\x20\t]+\w+[\x20\t]*=[\x20\t]*).*", Color.Fuchsia);
+
             // Loops
             RegexRules.Add(@":\w+", Color.RoyalBlue);
 
@@ -40,9 +43,6 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
             // Comments
             RegexRules.Add("[rR][eE][mM] .*", Color.DarkGray);
-
-            // Set value
-            RegexRules.Add(@"(?<=set[\x20\t]+\w+[\x20\t]*=[\x20\t]*).*", Color.Fuchsia);
         }
 
         public override bool IndentNextLine(string currentLine) => false;

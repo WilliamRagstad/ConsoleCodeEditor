@@ -6,24 +6,30 @@ using System.Threading.Tasks;
 
 namespace ConsoleCodeEditor.Component.Util
 {
-    class Viewport<T> where T: IComparable
-    {
-        public T Top;
-        public T Left;
-        public T Width;
-        public T Height;
 
-        public Viewport(T top, T left, T width, T height)
+    class ConsoleViewport
+    {
+        public int Top { get; set; }
+        public int Left { get; set; }
+        public uint Width { get; set; }
+        public uint Height { get; set; }
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
+
+        public ConsoleViewport(int top, int left, uint width, uint height, int offsetX = 0, int offsetY = 0)
         {
             Top = top;
             Left = left;
             Width = width;
             Height = height;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
         }
-    }
 
-    class ConsoleViewport : Viewport<int>
-    {
-        public ConsoleViewport(int top, int left, int width, int height) : base(top, left, width, height) { }
+        public ConsoleViewport() { }
+
+
+        public bool IsTopInside(int top) => top >= Top + OffsetY && top <= Top + OffsetY + Height;
+        public bool IsLeftInside(int left) => left >= Left + OffsetX && left <= Left + OffsetX + Width;
     }
 }

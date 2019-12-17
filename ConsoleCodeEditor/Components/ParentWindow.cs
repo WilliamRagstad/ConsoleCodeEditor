@@ -28,6 +28,9 @@ namespace ConsoleCodeEditor.Component
             //_runtime.ApartmentState = ApartmentState.STA;
             _runtime.SetApartmentState(ApartmentState.STA);
             if (Settings.ResponsiveGUI) _responsiveGUI = new Thread(_responsiveGUILoop);
+
+            Viewport = new ConsoleViewport();
+            UpdateViewport();
         }
 
         public List<Editor> Editors;
@@ -92,6 +95,8 @@ namespace ConsoleCodeEditor.Component
             editor.Parent = this;
             editor.FileIsSaved = !newFile;
             Editors.Add(editor);
+
+            UpdateViewport();
         }
         public void DrawTabs()
         {
@@ -168,6 +173,21 @@ namespace ConsoleCodeEditor.Component
             Console.ForegroundColor = Settings.DockCurrentLanguage_Foreground;
             Console.Write(languageName);
         }
+        
+        private void UpdateViewport()
+        {
+            int tabTextLen = 0;
+            for (int i = 0; i < Editors.Count; i++)
+            {
+                tabTextLen += $" {Editors[i].Filename} |".Length;
+            }
+            Viewport.Top = tabTextLen / Console.WindowWidth + TabHeight;
+            Viewport.Left = 0;
+            Viewport.Width = (uint)Console.WindowWidth;
+            Viewport.Height = (uint)( Console.WindowHeight - Viewport.Top - DockHeight );
+            // throw new NotImplementedException();
+        }
+
         public void Start()
         {
             if(Settings.ResponsiveGUI) UpdateGUI();

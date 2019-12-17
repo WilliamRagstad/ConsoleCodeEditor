@@ -168,7 +168,22 @@ namespace ConsoleCodeEditor.Component
         }
         public void DrawAllLines(int startIndex = 0)
         {
-            for (int i = startIndex; i < contentBuffer.Count; i++) DrawLine(i, false);
+            for (int i = startIndex; i < contentBuffer.Count; i++)
+            {
+                int relativeTop = i + ParentWindow.TabHeight;
+                if (ParentWindow.Viewport.IsTopInside(relativeTop)) DrawLine(i, false);
+                else if (i - ParentWindow.Viewport.OffsetY > 0)
+                {
+                    // Move offset down
+                    ParentWindow.Viewport.OffsetY++;
+                    DrawAllLines();
+                }
+                else if (i + ParentWindow.Viewport.OffsetY < 0)
+                {
+                    ParentWindow.Viewport.OffsetY--;
+                    DrawAllLines();
+                }
+            }
         }
 
         private void ClearLine(int top, int lineLength)
@@ -453,7 +468,7 @@ namespace ConsoleCodeEditor.Component
         public void Runtime()
         {
             DrawLine(CursorTop);
-            if (!Parent.UpdateGUI()) Parent.DrawDock(); // If the gui wasn't updated, just update the dock.
+            if (!Parent.UpdateGUI()) Parent.DrawDock(true); // If the gui wasn't updated, just update the dock.
         }
         public void Initialize() => contentBuffer = ReadFileContent();
     }
