@@ -104,7 +104,7 @@ namespace ConsoleCodeEditor.Component
         public static SyntaxHighlighting.LanguageSyntax DetectLanguageSyntax(string filepath) {
             string[] fp = filepath.Split('.');
             string fileExt = fp[fp.Length - 1].ToLower();
-            switch(fileExt)
+            switch (fileExt)
             {
                 case "txt": return SyntaxHighlighting.Languages.PlainText.Instance;
                 case "an": return SyntaxHighlighting.Languages.AdvancedNote.Instance;
@@ -140,6 +140,8 @@ namespace ConsoleCodeEditor.Component
                 case ".ts": return SyntaxHighlighting.Languages.TypeScript.Instance;
                 case ".xml": return SyntaxHighlighting.Languages.XML.Instance;
                 case ".yaml": return SyntaxHighlighting.Languages.YAML.Instance;*/
+                case "w": return SyntaxHighlighting.Languages.WordLang.Instance;
+                case "wl": return SyntaxHighlighting.Languages.WordLang.Instance;
                 default: return SyntaxHighlighting.Languages.PlainText.Instance;
             }
         }
@@ -186,19 +188,21 @@ namespace ConsoleCodeEditor.Component
             }
         }
 
-        private void ClearLine(int top, int lineLength)
+        private bool ClearLine(int top, int lineLength)
         {
+            if (ParentWindow.TabHeight + top >= Console.BufferHeight) return false;
             // Clear the previous line in chunks at the time
             Console.SetCursorPosition(0, ParentWindow.TabHeight + top);
             string chunk = "      ";
             int times = Console.WindowWidth / chunk.Length;
             for (int i = 0; i < times; i++) Console.Write(chunk);
             for (int i = 0; i < Console.WindowWidth - chunk.Length * times; i++) Console.Write(" ");
+            return true;
         }
 
         private void DrawLine(int index, bool takeUserInput = true)
         {
-            ClearLine(index, contentBuffer[index].Length);
+            if (!ClearLine(index, contentBuffer[index].Length)) return;
             Console.SetCursorPosition(LinesLength - index.ToString().Length, index + ParentWindow.TabHeight);
             Console.ForegroundColor = Settings.LineNumbersForeground;
             Console.Write($"{index}{Settings.LineIndexSeparator} ");
@@ -224,6 +228,7 @@ namespace ConsoleCodeEditor.Component
                 // Weird character to hide
                 Console.CursorLeft -= 1;
                 Console.Write(" ");
+                bool returnAfterSwitch = true;
 
                 switch (key.Key)
                 {
@@ -232,9 +237,23 @@ namespace ConsoleCodeEditor.Component
                         FileIsSaved = true;
                         return;
                     case ConsoleKey.Backspace:
-                        // Remove all spaces
-                        contentBuffer[index] = contentBuffer[index].TrimEnd();
+
+                        //contentBuffer[index] = contentBuffer[index].TrimEnd();
+                        if (CursorLeft == 0) { returnAfterSwitch = false; break; }
+                        int removeStart = 0;
+                        for (int i = CursorLeft - 1; i > 0; i--)
+                        {
+                            char c = contentBuffer[index][i];
+                            if (c == ' ')
+                            {
+                                removeStart = i;
+                                if (i != CursorLeft - 1) removeStart++;
+                                break;
+                            }
+                        }
+                        contentBuffer[index] = contentBuffer[index].Remove(removeStart, contentBuffer[index].Length - removeStart);
                         CursorLeft = contentBuffer[index].Length;
+                        FileIsSaved = false;
                         return;
                     case ConsoleKey.O:
                         OpenFileDialog openFile = new OpenFileDialog();
@@ -282,7 +301,21 @@ namespace ConsoleCodeEditor.Component
                             CursorTop++;
                             CursorLeft = 0;
                         }
-                        else CursorLeft = contentBuffer[index].Length;
+                        else
+                        {
+                            //CursorLeft = contentBuffer[index].Length;
+
+                            for (int i = CursorLeft + 1; i < contentBuffer[index].Length; i++)
+                            {
+                                char c = contentBuffer[index][i];
+                                if (c == ' ')
+                                {
+                                    CursorLeft = i;
+                                    return;
+                                }
+                            }
+                            CursorLeft = contentBuffer[index].Length;
+                        }
                         return;
                     case ConsoleKey.LeftArrow:
                         if (CursorLeft == 0 && CursorTop > 0)
@@ -291,18 +324,31 @@ namespace ConsoleCodeEditor.Component
                             CursorLeft = contentBuffer[index - 1].Length;
                             DrawLine(index); // Draw the "previous" line
                         }
-                        else CursorLeft = 0;
+                        else
+                        {
+                            //CursorLeft = 0;
+                            for (int i = CursorLeft - 1; i > 0; i--)
+                            {
+                                char c = contentBuffer[index][i];
+                                if (c == ' ' && i != CursorLeft - 1)
+                                {
+                                    CursorLeft = i+1;
+                                    return;
+                                }
+                            }
+                            CursorLeft = 0;
+                        }
                         return;
                 }
-                return;
+                if (returnAfterSwitch) return;
             }
-            else if (key.Modifiers == ConsoleModifiers.Alt)
+            if (key.Modifiers == ConsoleModifiers.Alt)
             {
                 // Change Tab
                 try
                 {
-                   int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
-                   Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
+                    Program.ParentWindow.SetCurrentEditor(tabIndex);
                 }
                 catch { }
                 return;
@@ -315,9 +361,9 @@ namespace ConsoleCodeEditor.Component
                 string leftHandSide = contentBuffer[index].Substring(CursorLeft, contentBuffer[index].Length - CursorLeft);
                 contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, contentBuffer[index].Length - CursorLeft);
                 bool autoIndent = LanguageSyntax.IndentNextLine(contentBuffer[index]);
-                contentBuffer.Insert(CursorTop + 1, (autoIndent ? Settings.Indents : "") + leftHandSide);
+                contentBuffer.Insert(CursorTop + 1, (autoIndent ? Settings.TabSize : "") + leftHandSide);
                 CursorTop++;
-                if (autoIndent) CursorLeft = Settings.Indents.Length;
+                if (autoIndent) CursorLeft = Settings.TabSize.Length;
                 else CursorLeft = 0;
                 if (prevLineIndexLen != LinesLength)
                 {
@@ -421,8 +467,8 @@ namespace ConsoleCodeEditor.Component
             if (key.Key == ConsoleKey.Tab)
             {
                 FileIsSaved = false;
-                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.Indents);
-                CursorLeft += Settings.Indents.Length;
+                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.TabSize);
+                CursorLeft += Settings.TabSize.Length;
                 return;
             }
             if (key.Key == ConsoleKey.Escape)
@@ -470,6 +516,12 @@ namespace ConsoleCodeEditor.Component
             DrawLine(CursorTop);
             if (!Parent.UpdateGUI()) Parent.DrawDock(true); // If the gui wasn't updated, just update the dock.
         }
-        public void Initialize() => contentBuffer = ReadFileContent();
+        public void Initialize() {
+            contentBuffer = ReadFileContent();
+            for (int i = 0; i < contentBuffer.Count; i++)
+            {
+                contentBuffer[i] = contentBuffer[i].Replace("\t", Settings.TabSize);
+            }
+        }
     }
 }

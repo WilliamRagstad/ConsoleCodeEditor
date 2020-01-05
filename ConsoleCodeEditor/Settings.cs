@@ -13,7 +13,7 @@ namespace ConsoleCodeEditor
         public static string cceHome = userDirectory + @".cce\";
         public static string tmpFilepath = cceHome + @"tmp\";
 
-        public static string Indents = "    ";
+        public static string TabSize = "    ";
         public static bool AutoIndent = true;
 
         public static Size InitialBufferSize; // Unuseful..?

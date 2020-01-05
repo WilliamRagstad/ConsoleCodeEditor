@@ -170,7 +170,7 @@ namespace ConsoleCodeEditor.Component
             Console.Write(text);
             // Re-write language name but in color
             Console.CursorLeft = Console.WindowWidth - languageName.Length - 1;
-            Console.ForegroundColor = Settings.DockCurrentLanguage_Foreground;
+            if (cEditor.LanguageSyntax.IsExecutable()) Console.ForegroundColor = Settings.DockCurrentLanguage_Foreground;
             Console.Write(languageName);
         }
         
