@@ -3,8 +3,8 @@
     <br>
     <img src="title.png" alt="Console Code Editor" width="40%"/>
     <p style="padding-bottom: 100px;">
-        Lightweight and elegant text/code editor in your console!<br>
-        A good alternative to vim or nano.<br>
+        Lightweight, elegant and cross-platform text editor/IDE in your terminal!<br>
+        (A good alternative to vim or nano)<br>
         <em>Made with ❤️ by <a href="https://twitter.com/williamragstad">William</a></em>
     </p>
 </div>
