@@ -108,6 +108,7 @@ namespace ConsoleCodeEditor.Component
             {
                 case "txt": return SyntaxHighlighting.Languages.PlainText.Instance;
                 case "an": return SyntaxHighlighting.Languages.AdvancedNote.Instance;
+                case "asm": return SyntaxHighlighting.Languages.AssemblyMIPS.Instance;
                 case "bat": return SyntaxHighlighting.Languages.Batch.Instance;
                 case "cmd": return SyntaxHighlighting.Languages.Batch.Instance;
                 case "btm": return SyntaxHighlighting.Languages.Batch.Instance;
@@ -219,6 +220,13 @@ namespace ConsoleCodeEditor.Component
             }
         }
 
+        enum CharType
+        {
+            Word,
+            Space,
+            Special
+        }
+
         public void ProcessKey(object sender, ConsoleKeyInfo key) => ProcessKey(sender, CursorTop, key);
         public void ProcessKey(object sender, int index, ConsoleKeyInfo key)
         {
@@ -226,8 +234,11 @@ namespace ConsoleCodeEditor.Component
             if (key.Modifiers == ConsoleModifiers.Control)
             {
                 // Weird character to hide
-                Console.CursorLeft -= 1;
-                Console.Write(" ");
+                if (Console.CursorLeft > 0)
+                {
+                    Console.CursorLeft -= 1;
+                    Console.Write(" ");
+                }
                 bool returnAfterSwitch = true;
 
                 switch (key.Key)
@@ -240,19 +251,30 @@ namespace ConsoleCodeEditor.Component
 
                         //contentBuffer[index] = contentBuffer[index].TrimEnd();
                         if (CursorLeft == 0) { returnAfterSwitch = false; break; }
-                        int removeStart = 0;
-                        for (int i = CursorLeft - 1; i > 0; i--)
+                        int removeStart = CursorLeft;
+
+                        CharType rmt = CharType.Special; // Default
+                        if (char.IsLetter(contentBuffer[index][CursorLeft-1])) rmt = CharType.Word;
+                        else if (char.IsWhiteSpace(contentBuffer[index][CursorLeft-1])) rmt = CharType.Space;
+
+                        if (rmt == CharType.Special)
                         {
-                            char c = contentBuffer[index][i];
-                            if (c == ' ')
-                            {
-                                removeStart = i;
-                                if (i != CursorLeft - 1) removeStart++;
-                                break;
-                            }
+                            contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
+                            CursorLeft = contentBuffer[index].Length;
+                            FileIsSaved = false;
+                            return;
                         }
-                        contentBuffer[index] = contentBuffer[index].Remove(removeStart, contentBuffer[index].Length - removeStart);
-                        CursorLeft = contentBuffer[index].Length;
+
+                        for (int i = CursorLeft - 1; i >= 0; i--)
+                        {
+                            if ((char.IsWhiteSpace(contentBuffer[index][i]) && rmt == CharType.Space) ||
+                                (char.IsLetter(contentBuffer[index][i]) && rmt == CharType.Word))
+                                removeStart = i;
+                            else
+                                break;
+                        }
+                        contentBuffer[index] = contentBuffer[index].Remove(removeStart, CursorLeft - removeStart);
+                        CursorLeft = removeStart;
                         FileIsSaved = false;
                         return;
                     case ConsoleKey.O:
@@ -261,6 +283,13 @@ namespace ConsoleCodeEditor.Component
                         {
                             Parent.OpenFileEditor(openFile.FileName);
                             Parent.SetCurrentEditor(Parent.Editors.Count - 1);
+
+                            if (!FileIsSaved && Filename == Settings.NewFileName && contentBuffer.Count == 1 && string.IsNullOrEmpty(contentBuffer[0].Trim()))
+                            {
+                                Parent.Editors.Remove(this);
+                                Parent.SetCurrentEditor(0);
+                            }
+
                             Parent.DrawTabs();
                         }
                         return;
@@ -296,49 +325,79 @@ namespace ConsoleCodeEditor.Component
 
                         return;
                     case ConsoleKey.RightArrow:
-                        if (CursorLeft == contentBuffer[index].Length && CursorTop < contentBuffer.Count - 1)
+                        if (CursorLeft == contentBuffer[index].Length)
                         {
-                            CursorTop++;
-                            CursorLeft = 0;
+                            if (CursorTop < contentBuffer.Count - 1)
+                            {
+                                CursorTop++;
+                                CursorLeft = 0;
+                            }
                         }
                         else
                         {
-                            //CursorLeft = contentBuffer[index].Length;
+                            CharType jct = CharType.Special; // Default
+                            if (char.IsLetter(contentBuffer[index][CursorLeft])) jct = CharType.Word;
+                            else if (char.IsWhiteSpace(contentBuffer[index][CursorLeft])) jct = CharType.Space;
 
-                            for (int i = CursorLeft + 1; i < contentBuffer[index].Length; i++)
+                            if (jct == CharType.Special)
+                            {
+                                if (CursorLeft < contentBuffer[index].Length)
+                                    CursorLeft++;
+                                return;
+                            }
+
+                            for (int i = CursorLeft; i < contentBuffer[index].Length; i++)
                             {
                                 char c = contentBuffer[index][i];
-                                if (c == ' ')
-                                {
-                                    CursorLeft = i;
+                                if ((char.IsWhiteSpace(c) && jct == CharType.Space) ||
+                                    (char.IsLetter(c) && jct == CharType.Word))
+                                    CursorLeft++;
+                                else
                                     return;
-                                }
                             }
-                            CursorLeft = contentBuffer[index].Length;
                         }
                         return;
                     case ConsoleKey.LeftArrow:
-                        if (CursorLeft == 0 && CursorTop > 0)
+                        if (CursorLeft == 0)
                         {
-                            CursorTop--;
-                            CursorLeft = contentBuffer[index - 1].Length;
-                            DrawLine(index); // Draw the "previous" line
+                            if (CursorTop > 0)
+                            {
+                                CursorTop--;
+                                CursorLeft = contentBuffer[index - 1].Length;
+                                DrawLine(index); // Draw the "previous" line
+                            }
                         }
                         else
                         {
-                            //CursorLeft = 0;
-                            for (int i = CursorLeft - 1; i > 0; i--)
+                            CharType jct = CharType.Special; // Default
+                            if (char.IsLetter(contentBuffer[index][CursorLeft-1])) jct = CharType.Word;
+                            else if (char.IsWhiteSpace(contentBuffer[index][CursorLeft-1])) jct = CharType.Space;
+
+                            if (jct == CharType.Special)
+                            {
+                                if (CursorLeft > 0)
+                                    CursorLeft--;
+                                return;
+                            }
+
+                            for (int i = CursorLeft-1; i >= 0; i--)
                             {
                                 char c = contentBuffer[index][i];
-                                if (c == ' ' && i != CursorLeft - 1)
-                                {
-                                    CursorLeft = i+1;
+                                if ((char.IsWhiteSpace(c) && jct == CharType.Space) ||
+                                    (char.IsLetter(c) && jct == CharType.Word))
+                                    CursorLeft--;
+                                else
                                     return;
-                                }
                             }
-                            CursorLeft = 0;
                         }
                         return;
+                        // Pass through
+                    case ConsoleKey.Enter:
+                    case ConsoleKey.Delete:
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.UpArrow:
+                        returnAfterSwitch = false;
+                        break;
                 }
                 if (returnAfterSwitch) return;
             }
@@ -373,7 +432,7 @@ namespace ConsoleCodeEditor.Component
                 else DrawAllLines(CursorTop - 1);
                 return;
             }
-            if (key.Key == ConsoleKey.UpArrow)
+            else if (key.Key == ConsoleKey.UpArrow)
             {
                 if (CursorTop > 0)
                 {
@@ -383,7 +442,7 @@ namespace ConsoleCodeEditor.Component
                 }
                 return;
             }
-            if (key.Key == ConsoleKey.DownArrow)
+            else if (key.Key == ConsoleKey.DownArrow)
             {
                 if (CursorTop < contentBuffer.Count - 1)
                 {
@@ -393,7 +452,7 @@ namespace ConsoleCodeEditor.Component
                 }
                 return;
             }
-            if (key.Key == ConsoleKey.LeftArrow)
+            else if (key.Key == ConsoleKey.LeftArrow)
             {
                 if (CursorLeft > 0) CursorLeft -= 1;
                 else if (CursorTop > 0 && CursorLeft == 0)
@@ -404,7 +463,7 @@ namespace ConsoleCodeEditor.Component
                 }
                 return;
             }
-            if (key.Key == ConsoleKey.RightArrow)
+            else if (key.Key == ConsoleKey.RightArrow)
             {
                 if (CursorLeft < contentBuffer[index].Length) CursorLeft += 1;
                 else if (CursorTop + 1 < contentBuffer.Count)
@@ -414,7 +473,7 @@ namespace ConsoleCodeEditor.Component
                 }
                 return;
             }
-            if (key.Key == ConsoleKey.Backspace)
+            else if (key.Key == ConsoleKey.Backspace)
             {
                 FileIsSaved = false;
                 if (CursorLeft == 0 && CursorTop > 0)
@@ -444,7 +503,7 @@ namespace ConsoleCodeEditor.Component
                 if (CursorLeft > 0) CursorLeft--;
                 return;
             }
-            if (key.Key == ConsoleKey.Delete)
+            else if (key.Key == ConsoleKey.Delete)
             {
                 int prevLinesLength = LinesLength;
                 FileIsSaved = false;
@@ -464,14 +523,14 @@ namespace ConsoleCodeEditor.Component
                 if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
                 return;
             }
-            if (key.Key == ConsoleKey.Tab)
+            else if (key.Key == ConsoleKey.Tab)
             {
                 FileIsSaved = false;
                 contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.TabSize);
                 CursorLeft += Settings.TabSize.Length;
                 return;
             }
-            if (key.Key == ConsoleKey.Escape)
+            else if (key.Key == ConsoleKey.Escape)
             {
                 if (Parent.allEditorsSaved())
                 {
@@ -499,6 +558,20 @@ namespace ConsoleCodeEditor.Component
                     Console.Clear();
                     Environment.Exit(0);
                 }
+                return;
+            }
+            else if (key.Key == ConsoleKey.PageUp)
+            {
+                CursorLeft = 0;
+                CursorTop = 0;
+                DrawLine(index); // Draw previous line
+                return;
+            }
+            else if (key.Key == ConsoleKey.PageDown)
+            {
+                CursorLeft = contentBuffer[contentBuffer.Count - 1].Length;
+                CursorTop = contentBuffer.Count - 1;
+                DrawLine(index); // Draw previous line
                 return;
             }
 

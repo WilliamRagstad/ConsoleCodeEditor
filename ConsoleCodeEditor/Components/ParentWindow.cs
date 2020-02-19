@@ -69,7 +69,7 @@ namespace ConsoleCodeEditor.Component
             newFile.FileIsSaved = false;
             AddEditor(newFile, true);
         }
-        public void NewFileEditor() => NewFileEditor("Untitled", null, SyntaxHighlighting.Languages.PlainText.Instance);
+        public void NewFileEditor() => NewFileEditor(Settings.NewFileName, null, SyntaxHighlighting.Languages.PlainText.Instance);
         public bool allEditorsSaved()
         {
             for (int i = 0; i < Editors.Count; i++)
