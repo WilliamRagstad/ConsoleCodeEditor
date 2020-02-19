@@ -12,6 +12,7 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
         public AssemblyMIPS()
         {
             DisplayName = "MIPS ASM";
+            PreferredEncoding = Encoding.ASCII;
 
             // Undefined tokens (raw labels)
             RegexRules.Add(@"\w+", Color.Green);
@@ -43,8 +44,9 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
         public override bool IndentNextLine(string currentLine) => currentLine.EndsWith(":") || currentLine.StartsWith(".") || currentLine.StartsWith(Settings.TabSize);
 
-        public override bool IsExecutable() => false;
+        public override bool IsExecutable() => true;
 
-        public override string ExecutionArguments(string filepath) => $"";
+        // http://courses.missouristate.edu/kenvollmar/mars/Help/Help_4_1/MarsHelpCommand.html
+        public override string ExecutionArguments(string filepath) => $"java -jar \"{AppDomain.CurrentDomain.BaseDirectory + @"\CompilerCollection\"}Mars.jar\" \"{filepath}\" hex nc 10000 v0 v1 a0 a1 a2 a3 t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 s0 s1 s2 s3 s4 s5 s6 s7 ra";
     }
 }

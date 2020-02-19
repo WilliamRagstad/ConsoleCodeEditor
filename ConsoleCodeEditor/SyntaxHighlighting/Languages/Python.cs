@@ -45,6 +45,6 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
         public override bool IsExecutable() => true;
 
-        public override string ExecutionArguments(string filepath) => $"python {filepath}";
+        public override string ExecutionArguments(string filepath) => $"python \"{filepath}\"";
     }
 }

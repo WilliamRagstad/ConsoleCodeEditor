@@ -69,7 +69,8 @@ namespace ConsoleCodeEditor.Component
         private void SaveToFile() {
             if (Filepath != null && !string.IsNullOrEmpty(Filepath))
             {
-                File.WriteAllLines(Filepath, contentBuffer.ToArray(), FileEncoding);
+                string[] lines = contentBuffer.ToArray();
+                File.WriteAllLines(Filepath, lines, FileEncoding);
                 FileIsSaved = true;
             }
             else
@@ -245,7 +246,6 @@ namespace ConsoleCodeEditor.Component
                 {
                     case ConsoleKey.S:
                         SaveToFile();
-                        FileIsSaved = true;
                         return;
                     case ConsoleKey.Backspace:
 
@@ -279,10 +279,14 @@ namespace ConsoleCodeEditor.Component
                         return;
                     case ConsoleKey.O:
                         OpenFileDialog openFile = new OpenFileDialog();
+                        openFile.Multiselect = true;
                         if (openFile.ShowDialog() == DialogResult.OK)
                         {
-                            Parent.OpenFileEditor(openFile.FileName);
-                            Parent.SetCurrentEditor(Parent.Editors.Count - 1);
+                            for (int i = 0; i < openFile.FileNames.Length; i++)
+                            {
+                                Parent.OpenFileEditor(openFile.FileNames[i]);
+                                Parent.SetCurrentEditor(Parent.Editors.Count - 1);
+                            }
 
                             if (!FileIsSaved && Filename == Settings.NewFileName && contentBuffer.Count == 1 && string.IsNullOrEmpty(contentBuffer[0].Trim()))
                             {

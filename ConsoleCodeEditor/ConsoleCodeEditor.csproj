@@ -58,6 +58,11 @@
     <Compile Include="Components\FormsWindow.cs" />
     <Compile Include="Components\Util\Viewport.cs" />
     <Compile Include="KeyHook\KeyHook.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SyntaxHighlighting\LanguageSyntax.cs" />
     <Compile Include="SyntaxHighlighting\Languages\AssemblyMIPS.cs" />
     <Compile Include="SyntaxHighlighting\Languages\WordLang.cs" />
@@ -79,8 +84,16 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CompilerCollection\Mars.jar">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

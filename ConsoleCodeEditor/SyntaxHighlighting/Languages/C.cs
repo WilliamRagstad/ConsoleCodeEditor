@@ -53,6 +53,6 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
 
         public override bool IsExecutable() => true;
 
-        public override string ExecutionArguments(string filepath) => $"gcc {filepath} && a.exe && del a.exe";
+        public override string ExecutionArguments(string filepath) => $"gcc \"{filepath}\" && a.exe && del a.exe";
     }
 }
