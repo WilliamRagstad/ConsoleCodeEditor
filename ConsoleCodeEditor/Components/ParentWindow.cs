@@ -79,6 +79,57 @@ namespace ConsoleCodeEditor.Component
             return true;
         }
 
+        public void ExitProgram()
+        {
+            if (allEditorsSaved())
+            {
+                Console.Clear();
+                Environment.Exit(0);
+            }
+            else
+            {
+                // Make sure to save all editors first
+                if (MessageBox.Show("Some files are not saved. Do you wish to exit?", "Exit without saving?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
+                foreach (Editor e in Editors)
+                {
+                    if (!e.FileIsSaved)
+                    {
+                        if (MessageBox.Show("Are you sure about discarding all changes to " + e.Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                        {
+                            // Save file
+                            e.SaveToFile();
+                        }
+                    }
+                }
+                Console.Clear();
+                Environment.Exit(0);
+            }
+        }
+
+        public void CloseCurrentTab() => CloseTab(_currentEditorIndex);
+        public void CloseTab(int index)
+        {
+            if (_currentEditorIndex == index)
+            {
+                if (_currentEditorIndex > 0)
+                {
+                    if (!Editors[index].FileIsSaved && MessageBox.Show("Are you sure about discarding all changes to " + Editors[index].Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        // Save file
+                        Editors[index].SaveToFile();
+                    }
+                    _currentEditorIndex--;
+                }
+                else
+                    ExitProgram();
+            }
+            Editors.RemoveAt(index);
+            Editors[_currentEditorIndex].DrawAllLines();
+        }
+
         public void SetCurrentEditor(int index)
         {
             if (index < 0) index += 10; // Keyboard numbers can't exceed 10. (0-9)

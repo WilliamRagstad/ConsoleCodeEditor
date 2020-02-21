@@ -66,7 +66,7 @@ namespace ConsoleCodeEditor.Component
 
         public ParentWindow Parent;
 
-        private void SaveToFile() {
+        public void SaveToFile() {
             if (Filepath != null && !string.IsNullOrEmpty(Filepath))
             {
                 string[] lines = contentBuffer.ToArray();
@@ -407,14 +407,22 @@ namespace ConsoleCodeEditor.Component
             }
             if (key.Modifiers == ConsoleModifiers.Alt)
             {
-                // Change Tab
-                try
+                if (char.IsDigit(key.KeyChar))
                 {
-                    int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
-                    Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    // Change Tab
+                    try
+                    {
+                        int tabIndex = int.Parse(key.KeyChar.ToString()) - 1;
+                        Program.ParentWindow.SetCurrentEditor(tabIndex);
+                    }
+                    catch { }
+                    return;
                 }
-                catch { }
-                return;
+                else if (key.Key == ConsoleKey.F4)
+                {
+                    // Prompt to Close current tab or close editor
+                    Parent.CloseCurrentTab();
+                }
             }
 
             if (key.Key == ConsoleKey.Enter)
@@ -536,32 +544,7 @@ namespace ConsoleCodeEditor.Component
             }
             else if (key.Key == ConsoleKey.Escape)
             {
-                if (Parent.allEditorsSaved())
-                {
-                    Console.Clear();
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    // Make sure to save all editors first
-                    if (MessageBox.Show("Some files are not saved. Do you wish to exit?", "Exit without saving?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                    {
-                        return;
-                    }
-                    foreach (Editor e in Parent.Editors)
-                    {
-                        if (!e._fileIsSaved)
-                        {
-                            if (MessageBox.Show("Are you sure about discarding all changes to " + e.Filename + "?", "Discard?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                            {
-                                // Save file
-                                e.SaveToFile();
-                            }
-                        }
-                    }
-                    Console.Clear();
-                    Environment.Exit(0);
-                }
+                Parent.ExitProgram();
                 return;
             }
             else if (key.Key == ConsoleKey.PageUp)

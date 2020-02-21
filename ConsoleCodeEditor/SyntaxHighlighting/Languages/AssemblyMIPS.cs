@@ -24,10 +24,10 @@ namespace ConsoleCodeEditor.SyntaxHighlighting.Languages
             RegexRules.Add(@"\w+:", Color.SpringGreen);
 
             // Instruction name
-            RegexRules.Add(@"addi|add|addiu|addu|andi|and|beq|bne|jalr|jr|jal|j|lbu|lb|lui|lw|mul|nor|ori|or|sltu|slti|sltiu|slt|sllv|sll|sra|srl|srlv|sb|sw|sub|subu|xor|xori|nop", Color.Cyan);
+            RegexRules.Add(@"addi|add|addiu|addu|andi|and|beq|bne|jalr|jr|jal|j|lbu|lb|lui|lw|mul|nor|ori|or|sltu|slti|sltiu|slt|sllv|sll|sra|srl|srlv|sb|sw|sub|subu|xor|xori", Color.Cyan);
 
-            // Extra Instructions
-            RegexRules.Add(@"syscall", Color.Blue);
+            // Extra Instructions & psuedo instructions
+            RegexRules.Add(@"syscall|la|li|ble|move|nop", Color.Blue);
 
             // Numbers
             RegexRules.Add(@"0x[0-9abcdefABCDEF]+|(-?([0-9])+(\.[0-9]+)?)", Color.Orange);
