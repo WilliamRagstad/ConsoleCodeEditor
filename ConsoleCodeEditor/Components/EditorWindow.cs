@@ -320,6 +320,33 @@ namespace ConsoleCodeEditor.Component
                             DrawAllLines();
                         }
                         return;
+                    case ConsoleKey.V:
+                        string rawText = Clipboard.GetText();
+                        string[] texts = rawText.Replace("\r","").Replace("\t", Settings.TabSize).Split('\n');
+
+                        // Extract all the text that's on the right side of the cursor
+                        string rhsText = "";
+                        if (CursorLeft < contentBuffer[CursorTop].Length)
+                        {
+                            rhsText = contentBuffer[CursorTop].Substring(CursorLeft);
+                            contentBuffer[CursorTop] = contentBuffer[CursorTop].Remove(CursorLeft);
+                        }
+
+                        int j;
+                        for (j = 0; j < texts.Length; j++)
+                        {
+                            if (j == 0)
+                                contentBuffer[CursorTop] = contentBuffer[CursorTop].Insert(CursorLeft, texts[j]);
+                            else
+                                contentBuffer.Insert(CursorTop + j, texts[j]);
+                        }
+                        j--;
+
+                        CursorLeft = contentBuffer[CursorTop + j].Length;
+                        contentBuffer[CursorTop + j] += rhsText;
+                        CursorTop = CursorTop + j;
+                        DrawAllLines();
+                        return;
                     case ConsoleKey.Z:
                         // Undo
 
