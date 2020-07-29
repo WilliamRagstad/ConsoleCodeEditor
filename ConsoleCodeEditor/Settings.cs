@@ -23,6 +23,9 @@ namespace ConsoleCodeEditor
 
         #region Color theme
 
+        public static Color SelectionBackground = Color.Blue;
+        public static Color SelectionForeground = Color.White;
+
         public static Color DefaultForeground = Color.LightGray;
         public static Color DefaultBackground = Color.Black;
 

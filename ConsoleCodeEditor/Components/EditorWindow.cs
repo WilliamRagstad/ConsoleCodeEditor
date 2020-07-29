@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ConsoleCodeEditor.Components;
 using Console = Colorful.Console;
 
 namespace ConsoleCodeEditor.Component
@@ -42,6 +43,8 @@ namespace ConsoleCodeEditor.Component
 
         public int CursorTop; // Relative to the parent window
         public int CursorLeft;// -||-
+
+        public TextSelection Selection;
 
         private bool _fileIsSaved;
         public bool FileIsSaved
@@ -205,11 +208,62 @@ namespace ConsoleCodeEditor.Component
         private void DrawLine(int index, bool takeUserInput = true)
         {
             if (!ClearLine(index, contentBuffer[index].Length)) return;
+            int lineStartIndex = LinesLength - index.ToString().Length + 3;
             Console.SetCursorPosition(LinesLength - index.ToString().Length, index + ParentWindow.TabHeight);
             Console.ForegroundColor = Settings.LineNumbersForeground;
             Console.Write($"{index}{Settings.LineIndexSeparator} ");
             Console.ForegroundColor = Settings.DefaultForeground;
-            if (index < contentBuffer.Count) WriteSyntaxHighlight(contentBuffer[index]);
+
+            if (Selection != null)
+            {
+                if (Selection.WholeLineIsInSelection(index))
+                {
+                    Console.ForegroundColor = Settings.SelectionForeground;
+                    Console.BackgroundColor = Settings.SelectionBackground;
+                    Console.CursorLeft = lineStartIndex;
+                    Console.WriteLine(contentBuffer[index]);
+                }
+                else if (Selection.LineHasSelection(index))
+                {
+                    WriteSyntaxHighlight(contentBuffer[index]);
+                    Console.ForegroundColor = Settings.SelectionForeground;
+                    Console.BackgroundColor = Settings.SelectionBackground;
+                    string selectedText = "";
+
+                    if (index == Selection.Start.Line && index == Selection.End.Line)
+                    {
+                        if (Selection.End.Column - Selection.Start.Column != 0)
+                        {
+                            if (Selection.End.Column > Selection.Start.Column)
+                            {
+                                selectedText = contentBuffer[index].Substring(Selection.Start.Column, Selection.End.Column - Selection.Start.Column);
+                                Console.CursorLeft = lineStartIndex + Selection.Start.Column;
+                            }
+                            else if (Selection.End.Column < Selection.Start.Column)
+                            {
+                                selectedText = contentBuffer[index].Substring(Selection.End.Column, Selection.Start.Column - Selection.End.Column);
+                                Console.CursorLeft = lineStartIndex + Selection.End.Column;
+                            }
+                        }
+                    }
+                    else if (index == Selection.Start.Line)
+                    {
+                        Console.CursorLeft = lineStartIndex + Selection.Start.Column;
+                        selectedText = contentBuffer[index].Substring(Selection.Start.Column);
+                    }
+                    else if (index == Selection.End.Line) // Formailia
+                    {
+                        Console.CursorLeft = lineStartIndex;
+                        if (Selection.End.Column <= contentBuffer[index].Length)
+                            selectedText = contentBuffer[index].Substring(0, Selection.End.Column);
+                    }
+
+                    Console.Write(selectedText);
+                }
+                Console.ForegroundColor = Settings.DefaultForeground;
+                Console.BackgroundColor = Settings.DefaultBackground;
+            }
+            else if (index < contentBuffer.Count) WriteSyntaxHighlight(contentBuffer[index]);
 
             if (takeUserInput && CursorTop == index)
             {
@@ -432,6 +486,7 @@ namespace ConsoleCodeEditor.Component
                 }
                 if (returnAfterSwitch) return;
             }
+
             if (key.Modifiers == ConsoleModifiers.Alt)
             {
                 if (char.IsDigit(key.KeyChar))
@@ -452,6 +507,8 @@ namespace ConsoleCodeEditor.Component
                 }
             }
 
+            bool isControlChar = false;
+
             if (key.Key == ConsoleKey.Enter)
             {
                 int prevLineIndexLen = LinesLength;
@@ -469,7 +526,7 @@ namespace ConsoleCodeEditor.Component
                     DrawAllLines();
                 }
                 else DrawAllLines(CursorTop - 1);
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.UpArrow)
             {
@@ -479,7 +536,7 @@ namespace ConsoleCodeEditor.Component
                     CursorTop--;
                     DrawLine(index); // Draw the previous line
                 }
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.DownArrow)
             {
@@ -489,7 +546,7 @@ namespace ConsoleCodeEditor.Component
                     CursorTop++;
                     DrawLine(index); // Draw the previous line
                 }
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.LeftArrow)
             {
@@ -500,7 +557,7 @@ namespace ConsoleCodeEditor.Component
                     CursorLeft = contentBuffer[index - 1].Length;
                     DrawLine(index); // Draw the previous line
                 }
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.RightArrow)
             {
@@ -509,8 +566,9 @@ namespace ConsoleCodeEditor.Component
                 {
                     CursorTop++;
                     CursorLeft = 0;
+                    DrawLine(index);
                 }
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.Backspace)
             {
@@ -528,19 +586,26 @@ namespace ConsoleCodeEditor.Component
                     else DrawAllLines();
                     // Clear the previous line in chunks at the time
                     ClearLine(contentBuffer.Count, contentBuffer[index - 1].Length);
-                    return;
+                    isControlChar = true;
                 }
-                if (contentBuffer[index].Length == 0 && CursorTop > 0)
+                if (index < contentBuffer.Count)
                 {
-                    contentBuffer.RemoveAt(index);
-                    CursorTop--;
-                    Parent.Draw();
-                    DrawAllLines();
-                    return;
+                    if (CursorTop > 0 && contentBuffer[index].Length == 0)
+                    {
+                        contentBuffer.RemoveAt(index);
+                        CursorTop--;
+                        Parent.Draw();
+                        DrawAllLines();
+                        isControlChar = true;
+                    }
+                    if (CursorLeft > 0)
+                    {
+                        contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
+                        CursorLeft--;
+                    }
                 }
-                if (CursorLeft > 0) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft - 1, 1);
-                if (CursorLeft > 0) CursorLeft--;
-                return;
+                
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.Delete)
             {
@@ -560,38 +625,77 @@ namespace ConsoleCodeEditor.Component
                     return;
                 }
                 if (CursorLeft < contentBuffer[index].Length) contentBuffer[index] = contentBuffer[index].Remove(CursorLeft, 1);
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.Tab)
             {
                 FileIsSaved = false;
                 contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, Settings.TabSize);
                 CursorLeft += Settings.TabSize.Length;
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.Escape)
             {
                 Parent.ExitProgram();
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.PageUp)
             {
                 CursorLeft = 0;
                 CursorTop = 0;
                 DrawLine(index); // Draw previous line
-                return;
+                isControlChar = true;
             }
             else if (key.Key == ConsoleKey.PageDown)
             {
                 CursorLeft = contentBuffer[contentBuffer.Count - 1].Length;
                 CursorTop = contentBuffer.Count - 1;
                 DrawLine(index); // Draw previous line
-                return;
+                isControlChar = true;
             }
 
-            contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
-            CursorLeft++;
-            FileIsSaved = false;
+            bool CanClearSelection = true;
+            if (key.Modifiers == ConsoleModifiers.Shift)
+            {
+                // Change selection if is a combination with arrow keys
+                switch (key.Key)
+                {
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.LeftArrow:
+                    case ConsoleKey.RightArrow:
+                        if (Selection == null)
+                        {
+                            if (key.Key == ConsoleKey.LeftArrow)
+                                Selection = new TextSelection(CursorTop, CursorLeft, index, CursorLeft+1);
+                            if (key.Key == ConsoleKey.RightArrow)
+                                Selection = new TextSelection(CursorTop, CursorLeft-1, index, CursorLeft);
+                        }
+                        else
+                        {
+                            // Add support for negative selections (backwards)
+                            if (key.Key == ConsoleKey.LeftArrow)
+                                Selection.End = new LineColumnPair(CursorTop, CursorLeft+1);
+                            if (key.Key == ConsoleKey.RightArrow)
+                                Selection.End = new LineColumnPair(CursorTop, CursorLeft);
+                        }
+                        CanClearSelection = false;
+                        DrawLine(index);
+                        break;
+                }
+            }
+            if (CanClearSelection && Selection != null)
+            {
+                Selection = null;
+                DrawAllLines();
+            }
+
+            if (!isControlChar)
+            {
+                contentBuffer[index] = contentBuffer[index].Insert(CursorLeft, key.KeyChar.ToString());
+                CursorLeft++;
+                FileIsSaved = false;
+            }
         }
 
         public void Start()

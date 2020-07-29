@@ -56,6 +56,8 @@
     <Compile Include="Components\Form Controls\BaseControl.cs" />
     <Compile Include="Components\Form Controls\Text.cs" />
     <Compile Include="Components\FormsWindow.cs" />
+    <Compile Include="Components\Util\LineColumnPair.cs" />
+    <Compile Include="Components\Util\TextSelection.cs" />
     <Compile Include="Components\Util\Viewport.cs" />
     <Compile Include="KeyHook\KeyHook.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
