@@ -3,19 +3,12 @@
     <br>
     <img src="title.png" alt="Console Code Editor" width="40%"/>
     <p style="padding-bottom: 100px;">
-        Lightweight, elegant and cross-platform text editor/IDE in your terminal!<br>
-        (A good alternative to vim or nano)<br>
-        <em>Made with ❤️ by <a href="https://twitter.com/williamragstad">William</a></em>
+        A <code>lightweight</code>, <code>elegant</code> and <code>cross-platform</code> terminal text editor.
     </p>
 </div>
 
 <br>
-
 <br>
-
-Take me to the [installation](#installation) :arrow_right:
-
-## Preview
 
 <div align="center">
     <img alt="Preview GIF" src="preview.gif">
